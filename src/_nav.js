@@ -91,8 +91,18 @@ const _nav = [
 
   {
     component: CNavItem,
-    name: 'LogOut',
-    to: '/logout',
+    name: 'SignUp',
+    to: '/signUp',
+    icon: <CIcon icon={cilAccountLogout} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      // text: 'NEW',
+    },
+  },
+  {
+    component: CNavItem,
+    name: 'SignIn',
+    to: '/signIn',
     icon: <CIcon icon={cilAccountLogout} customClassName="nav-icon" />,
     badge: {
       color: 'info',

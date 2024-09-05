@@ -20,6 +20,7 @@ import { sygnet } from 'src/assets/brand/sygnet'
 
 // sidebar nav config
 import navigation from '../_nav'
+import { Typography } from '@mui/material'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -29,7 +30,7 @@ const AppSidebar = () => {
   return (
     <CSidebar
       className="border-end"
-      colorScheme="dark"
+      colorScheme="light" //dark
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}
@@ -38,11 +39,13 @@ const AppSidebar = () => {
       }}
     >
       {/* to="/" */}
-      <CSidebarHeader className="border-bottom1">
-        <CSidebarBrand className="text-decoration-none">
+      <CSidebarHeader className="border-bottom d-flex justify-content-center">
+        <CSidebarBrand className="text-decoration-none ">
           {/* <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
           <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} /> */}
-          <h3>CloudAssist</h3>
+          <Typography variant="h5" fontWeight={600}>
+            CloudAssist
+          </Typography>
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
@@ -51,11 +54,11 @@ const AppSidebar = () => {
         />
       </CSidebarHeader>
       <AppSidebarNav items={navigation} />
-      <CSidebarFooter className="border-top d-none d-lg-flex">
+      {/* <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
         />
-      </CSidebarFooter>
+      </CSidebarFooter> */}
     </CSidebar>
   )
 }

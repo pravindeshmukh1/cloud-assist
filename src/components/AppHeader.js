@@ -81,7 +81,7 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
         </CHeaderNav> */}
-        {/* <CHeaderNav>
+        <CHeaderNav>
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
@@ -121,19 +121,20 @@ const AppHeader = () => {
                 type="button"
                 onClick={() => setColorMode('auto')}
               >
-                <CIcon className="me-2" icon={cilContrast} size="lg" /> Auto
+                {/* <CIcon className="me-2" icon={cilContrast} size="lg" /> Auto */}
               </CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
-          <li className="nav-item py-1">
+          {/* <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
-          <AppHeaderDropdown />
-        </CHeaderNav> */}
+          <AppHeaderDropdown /> */}
+        </CHeaderNav>
       </CContainer>
       {/* <CContainer className="px-4" fluid>
         <AppBreadcrumb />
-      </CContainer> */}
+      </CContainer>
+      */}
     </CHeader>
   )
 }
