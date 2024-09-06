@@ -55,9 +55,11 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
+import axios from 'axios'
+import constants from '../../constants'
 
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density'
+  id: string
   label: string
   minWidth?: number
   align?: 'right'
@@ -66,27 +68,27 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-  {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
-  },
+  { id: 'model', label: 'Model', minWidth: 100 },
   {
     id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    label: 'Size',
     minWidth: 170,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
   },
   {
-    id: 'density',
-    label: 'Density',
+    id: 'noOfDocs',
+    label: 'No of Documents',
     minWidth: 170,
     align: 'right',
-    format: (value: number) => value.toFixed(2),
+    format: (value: number) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'createdDt',
+    label: 'Created Date',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toLocaleString('en-US'),
   },
 ]
 
@@ -121,6 +123,45 @@ const rows = [
   createData('Brazil', 'BR', 210147125, 8515767),
 ]
 const BotList = () => {
+  interface Bot {
+    size: string;
+    noOfDocs: string;
+    id: number,
+    "name": string,
+    "description": string,
+    "assistantId": string,
+    "threadId": string,
+    "userId": string,
+    "documentId": string,
+    "createdDt": string,
+    "expireDt": string,
+    "instruction": string,
+    "model": string
+  }
+  const [refresh, setRefresh] = React.useState<boolean>(true)
+  const [bot, setbot] = React.useState<Bot[]>([{
+    id: 0,
+    "name": "",
+    "description": "",
+    "assistantId": "",
+    "threadId": "",
+    "userId": "",
+    "documentId": "",
+    "createdDt": "",
+    "expireDt": "",
+    "instruction": "",
+    "model": "",
+    "size":"",
+    "noOfDocs":""
+  }]);
+  React.useEffect(() => {
+    axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res => {
+      setbot(res.data);
+    }).catch(err => {
+      console.error(err)
+    })
+  }, [refresh])
+  
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
 
@@ -134,7 +175,8 @@ const BotList = () => {
   }
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <>
+    {bot.length>0?<Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -151,9 +193,9 @@ const BotList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+            {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                   {columns.map((column) => {
                     const value = row[column.id]
                     return (
@@ -177,7 +219,8 @@ const BotList = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Paper>
+    </Paper>:<div>No assistant avalaible</div>}
+    </>
   )
 }
 export default BotList

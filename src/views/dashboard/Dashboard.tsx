@@ -25,9 +25,24 @@ import {
 } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 import { GridDeleteIcon } from '@mui/x-data-grid'
+import { useParams, useSearchParams } from 'react-router-dom'
 
 const Dashboard = () => {
-  const [bot, setBot] = useState<Bot[]>()
+
+  const [searchParam,setSearchParam]=useSearchParams();
+  console.log(searchParam.get('uid'));
+  console.log(searchParam.get('role'));
+  console.log(searchParam.get('flag'))
+  console.log(searchParam.get('Cid'))
+
+  if(searchParam.size>0){
+
+  localStorage.setItem('userId',searchParam.get('uid'))
+  localStorage.setItem('role',searchParam.get('role'))
+  localStorage.setItem('flag',searchParam.get('flag'))
+  localStorage.setItem('cid',searchParam.get('Cid'))
+  }
+  const [bot, setBot] = useState<Bot[]>([])
 
   const [text, setText] = useState('')
 
@@ -37,75 +52,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     axios
-      .get<Bot[]>(`${constants.getAssistantByUser}/${constants.userId}`)
+      .get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`)
       .then((res) => {
         setBot(res.data)
         setactiveBot(res.data[0])
       })
       .catch((err) => {
-        setBot([
-          {
-            id: 202,
-            name: ' name',
-            description: ' my gym trainer',
-            assistantId: 'asst_0Ppch9D4GqQA1s6EuE7qcXWl',
-            threadId: 'thread_sXi9KW1hM3IvscdMyWVZb6lK',
-            userId: '5b5b695d4d014e2db8ca',
-            documentId: '',
-            createdDt: '2024-08-28T12:39:09.6524',
-            expireDt: 'null',
-            instruction: 'null',
-            model: 'null',
-            size: 'null',
-            noOfDocs: 'null',
-          },
-          {
-            id: 152,
-            name: 'tempBot',
-            description: 'bot for R&D',
-            assistantId: 'asst_4FBwgYPCJU4MyorZ2sqfOukC',
-            threadId: 'thread_sXi9KW1hM3IvscdMyWVZb6lK',
-            userId: '5b5b695d4d014e2db8ca',
-            documentId: 'null',
-            createdDt: '2024-08-28T12:22:42.029896',
-            expireDt: 'null',
-            instruction: 'Make sure Instructions',
-            model: 'GPT4',
-            size: '1451',
-            noOfDocs: '2',
-          },
-          {
-            id: 452,
-            name: ' sales EX',
-            description: ' will handle all queries related to package deliveries',
-            assistantId: 'asst_AHauMTgr1q1pJLsSIdNtgDSc',
-            threadId: 'thread_sXi9KW1hM3IvscdMyWVZb6lK',
-            userId: '5b5b695d4d014e2db8ca',
-            documentId: 'null',
-            createdDt: '2024-09-01T16:54:45.977832',
-            expireDt: 'null',
-            instruction: ' you are a sales bot and response should be less than 300 words ',
-            model: 'gpt-4o',
-            size: 'null',
-            noOfDocs: 'null',
-          },
-          {
-            id: 502,
-            name: 'Java ',
-            description: ' my gym trainer',
-            assistantId: 'asst_dWI6lnwMKcb5qBMAartPfCYB',
-            threadId: 'null',
-            userId: '5b5b695d4d014e2db8ca',
-            documentId: 'null',
-            createdDt: '2024-09-03T19:34:21.158518',
-            expireDt: 'null',
-            instruction: ' tarin me for my fat loss program',
-            model: 'gpt-4o',
-            size: 'null',
-            noOfDocs: 'null',
-          },
-        ])
-
         console.error(err)
       })
   }, [])
@@ -116,13 +68,7 @@ const Dashboard = () => {
       message: 'Hi there How can I help you',
       id: 0,
       msgBy: 'AI',
-    },
-    {
-      message:
-        'To provide the most recent and accurate number of cars in India, updated statistics from credible sources like the Ministry of Road Transport and Highways or the Society of Indian Automobile Manufacturers (SIAM) would be necessary. However, based on available public data, here is an overview of the vehicle population in India:\n\n1. **Registered Passenger Vehicles**: As of recent data from 2019, India had roughly 30 million registered passenger vehicles. \n\n2. **Overall Vehicle Count**: The total number of registered vehicles, including all categories such as two-wheelers, commercial vehicles, and more, was reported to be over 295 million in March 2019.\n\nFor the most up-to-date figures, it would be ideal to refer to the latest annual reports or statistical releases from the mentioned Indian government departments or industry associations. If you come across a specific document or report, feel free to upload it here, and I will extract the relevant details for you.',
-      id: 1,
-      msgBy: 'user',
-    },
+    }
   ])
 
   function botSelected(e: ChangeEvent<HTMLSelectElement>): void {
@@ -142,7 +88,8 @@ const Dashboard = () => {
 
   return (
     <>
-      <div>
+    {!(bot.length>0)?<div>{'No bots avalaible Please create one'}</div>
+      :<div>
         {/* <h4>Bot available</h4>
         <select onChange={(e) => botSelected(e)}>
           {bot?.map((res) => {
@@ -166,12 +113,12 @@ const Dashboard = () => {
                 //     }
                 //     return errors;
                 //   }}
-                onSubmit={(values, { setSubmitting }) => {
+                onSubmit={(values, { setSubmitting,resetForm }) => {
                   console.log('🚀 ~ values:', values)
-                  // setTimeout(() => {
-                  //     alert(JSON.stringify(values, "null", 2));
-                  //     setSubmitting(false);
-                  // }, 400);
+                  setTimeout(() => {
+                      alert(JSON.stringify(values, null, 2));
+                      setSubmitting(false);
+                  }, 400);
                   let data: Message = {
                     id: 1,
                     message: values.msg,
@@ -197,11 +144,14 @@ const Dashboard = () => {
                       data1.message = res.data.response
                       data1.msgBy = 'AI'
                       setMessages((msg) => [...msg, data1])
+                      resetForm()
                     })
                     .catch((err) => console.log(err))
-                }}
+                    
+                }
+              }
               >
-                {({ isSubmitting }) => (
+                {({ isSubmitting ,resetForm}) => (
                   <div className="">
                     <div className="flex-column d-flex justify-content-center align-items-center text-center mt-2 ">
                       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 6 }} gutterBottom>
@@ -281,16 +231,30 @@ const Dashboard = () => {
                           <Field name="msg">
                             {({ field }) => (
                               <>
-                                {/* <input
+                              <div style={{display:"flex"}}>
+
+                                <input
                                   type="text"
-                                  className="form-control form-control-lg border-0 shadow-none ps-1 ps-sm-2 rounded-pill"
+                                  className="form-control form-control-lg shadow-none ps-1 ps-sm-2 rounded-pill"
                                   placeholder="Ask the Question"
                                   aria-label="Search..."
-                                  style={{ fontSize: '18px' }}
+                                  style={ {   fontSize: "18px",
+                                    borderStyle: "solid",
+                                    border: "1px solid #afafaf",
+                                    padding: '3px',
+                                    paddingLeft: '10px',
+                                    lineHeight: '1',
+                                    minWidth: '800px',
+                                    maxWidth: '200px',
+                                    // backgroundColor: '#fff',
+                                    borderRadius: '30px',}}
                                   {...field}
-                                /> */}
-
-                                <TextField
+                                />
+                               <IconButton type="submit" disabled={isSubmitting} style={{marginLeft: "-50px"}}>
+                                            <SendIcon color="action" fontSize="small" />
+                                          </IconButton>
+                              </div>
+                                {/* <TextField
                                   {...field}
                                   onChange={handleChange}
                                   variant="outlined"
@@ -327,10 +291,11 @@ const Dashboard = () => {
                                       ),
                                     },
                                   }}
-                                />
+                                /> */}
                               </>
                             )}
                           </Field>
+
                           {/* <div>
                           <button type="submit" disabled={isSubmitting}>
                             Submit
@@ -397,7 +362,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </>
   )
 }

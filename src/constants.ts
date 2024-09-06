@@ -10,6 +10,7 @@ const constants = {
   chatLink: `${baseurl}/runner/chat`,
   deleteAssistant: `${baseurl}/assistant`,
   getHistory: `${baseurl}/history`,
+  createThread:`${baseurl}/thread/create`
 }
 // asst_UWIlkTxmN1HnKyFY9j5RavlS
 Object.freeze(constants)

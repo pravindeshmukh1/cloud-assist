@@ -1,72 +1,69 @@
-import React, { useMemo, useState } from 'react'
-import classNames from 'classnames'
+import  { useEffect, useMemo, useState } from 'react'
 import { useTable, useSortBy, useFilters, usePagination } from 'react-table'
+import axios from 'axios'
+import { HistoryI } from '../../interface'
+import constants from '../../constants'
 
 const History = () => {
-  const [filterInput, setFilterInput] = useState('')
 
-  const data = useMemo(
-    () => [
-      // Sample data
-      {
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com',
-        time: 'Wed, 03 Apr 2024 11:43:20',
-        search: 'What is DSA',
-        type: 'AI',
-        ans: 'View',
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        time: 'Wed, 03 Apr 2024 11:43:20',
-        search: 'What is DSA',
-        type: 'GPT',
-        ans: 'View',
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        time: 'Wed, 03 Apr 2024 11:43:20',
-        search: 'What is DSA',
-        type: 'GPT',
-        ans: 'View',
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        time: 'Wed, 03 Apr 2024 11:43:20',
-        search: 'What is DSA',
-        type: 'GPT',
-        ans: 'View',
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        time: 'Wed, 03 Apr 2024 11:43:20',
-        search: 'What is DSA',
-        type: 'GPT',
-        ans: 'View',
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        time: 'Wed, 03 Apr 2024 11:43:20',
-        search: 'What is DSA',
-        type: 'GPT',
-        ans: 'View',
-      },
+  const [data, setHistory] = useState<HistoryI[]>([{
+      "id": "",
+      "status": "",
+      "assistantId": "",
+      "userId": "",
+      "threadId": "",
+      "question": "",
+      "answer": "",
+      "tokenUsed": "",
+      "uploadedDt": "",
+      "model":""
+  }]);
+  useEffect(() => {
+    axios.post<HistoryI[]>(`${constants.getHistory}/${localStorage.getItem("userId")}/id/asst_IvYaMqtb6TsKpur4hF6J7RJU`)
+    .then(res=>{
+      console.log(res.data);
+     
+      setHistory(res.data);
+    }).catch(err=>
+      console.log(err)
+      
+    )
+  
+    
+  }, [])
 
-    ],
-    [],
-  )
+  // const data = useMemo(
+  //   () => [
+  //     // Sample data
+  //     {
+  //       id: 1,
+       
+  //     },
+  //     {
+  //       id: 2,
+       
+  //     },
+  //     {
+  //       id: 2,
+       
+  //     },
+  //     {
+  //       id: 2,
+        
+  //     },
+  //     {
+  //       id: 2,
+       
+  //     },
+  //     {
+  //       id: 2,
+       
+  //     },
 
+  //   ],
+  //   [],
+  // )
+ 
   const columns = useMemo(
     () => [
       {
@@ -74,31 +71,32 @@ const History = () => {
         accessor: 'id',
         sortType: 'basic',
       },
-      {
-        Header: 'Name',
-        accessor: 'name',
-        filter: 'text',
-      },
-      {
-        Header: 'Email',
-        accessor: 'email',
-      },
+      // {
+      //   Header: 'Name',
+      //   accessor: 'userId',
+      //   filter: 'text',
+      // },
+      // {
+      //   Header: 'Email',
+      //   accessor: 'email',
+      // },
+      
       {
         Header: 'Time',
-        accessor: 'time',
+        accessor: 'uploadedDt',
         sortType: 'basic',
       },
       {
         Header: 'Search',
-        accessor: 'search',
+        accessor: 'question',
       },
       {
         Header: 'Type',
-        accessor: 'type',
+        accessor: 'model',
       },
       {
         Header: 'Ans',
-        accessor: 'ans',
+        accessor: 'answer',
       },
     ],
 
@@ -108,7 +106,7 @@ const History = () => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+
     prepareRow,
     page,
     canPreviousPage,
@@ -118,7 +116,7 @@ const History = () => {
     previousPage,
     nextPage,
     setPageSize,
-    setFilter,
+   
   } = useTable(
     { columns, data, initialState: { pageIndex: 0, pageSize: 5 } },
     useFilters,
@@ -127,16 +125,17 @@ const History = () => {
   )
 
   // Update the filter based on input
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value || undefined
-    setFilter('name', value)
-    setFilterInput(value)
-  }
+  // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = e.target.value || undefined
+  //   setFilter('name', value)
+  //   setFilterInput(value)
+  // }
 
   
   return (
     <>
-      <div className="col-md-12">
+    
+      {data.length>0?<div className="col-md-12">
         <div className=" card">
           <h5 className="card-header border border-bottom mb-3">Search History</h5>
           {/* <input
@@ -150,9 +149,9 @@ const History = () => {
               <div className="table-responsive text-nowrap">
                 <table id="myTable" className="table table-bordered" {...getTableProps()}>
                   <thead className="table-success">
-                    {headerGroups.map((headerGroup) => (
+                    {headerGroups.map((headerGroup:any) => (
                       <tr>
-                        {headerGroup.headers.map((column) => (
+                        {headerGroup.headers.map((column:any) => (
                           <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                             {column.render('Header')}
                             <span>
@@ -164,11 +163,11 @@ const History = () => {
                     ))}
                   </thead>
                   <tbody {...getTableBodyProps()}>
-                    {page.map((row) => {
+                    {page.map((row:any) => {
                       prepareRow(row)
                       return (
                         <tr {...row.getRowProps()}>
-                          {row.cells.map((cell) => (
+                          {row.cells.map((cell:any) => (
                             <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                           ))}
                         </tr>
@@ -202,7 +201,7 @@ const History = () => {
             <span aria-hidden="true">&raquo;</span>
           </button>
         </div>
-      </div>
+      </div>:<div>No history avalaible</div>}
     </>
   )
 }
