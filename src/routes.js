@@ -7,6 +7,7 @@ const AddUser = React.lazy(() => import('./views/user/AddUser'))
 const Profile = React.lazy(() => import('./views/user/Profile'))
 const BotList = React.lazy(() => import('./views/bot/BotList'))
 const EditBot = React.lazy(() => import('./views/bot/EditBot'))
+const BotConfig = React.lazy(() => import('./views/bot/BotConfig'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -17,6 +18,7 @@ const routes = [
   { path: '/profile', name: 'Profile', element: Profile },
   { path: '/botList', name: 'BotList', element: BotList },
   { path: '/editBot', name: 'EditBot', element: EditBot },
+  { path: '/botConfig', name: 'BotConfig', element: BotConfig },
 ]
 
 export default routes

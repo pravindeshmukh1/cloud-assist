@@ -1,219 +1,117 @@
-import axios from "axios";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import constants from "../../constants";
-import { Assistant, Bot } from "../../interface";
-import { useState } from "react";
-import { Button } from "@mui/material";
+import * as React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material'
+import { Delete, Edit } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
 
-const EditList = () => {
-  const [status1, setStatus1] = useState<boolean>(false)
-  const bot: Bot = {
-    assistantId: "",
-    createdDt: "",
-    description: "",
-    documentId: "",
-    expireDt: "",
-    id: 0,
-    instruction: "",
-    model: "",
-    name: "",
-    noOfDocs: "",
-    size: "",
-    threadId: "",
-    userId: ""
-  }
-
-  const [files, setFiles] = useState<FileList | null>(null);
-  const [status, setStatus] = useState<
-    'initial' | 'uploading' | 'success' | 'fail'
-  >('initial');
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setStatus('initial');
-      setFiles(e.target.files);
-    }
-  };
-  function completeSetup(assistant:string): void {
-    let data={
-            "asstId": assistant,
-            "path": "",
-            "botName": "car"
-    }
-   axios.post(`${constants.uploadLocalFiles}`,data).then(res=>{
-   
-    console.log(res);
-    if(res.status==200){
-       
-        alert(true)
-        setStatus1(true)
-    }
-   }).catch(err=>{console.log(err)
-    
-   }
-   )
+function createData(fileName: string, size: string, uploadDate: string, tags: string) {
+  return { fileName, size, uploadDate, tags }
 }
-  const handleUpload = async (assistantId:string) => {
-    if (files) {
-      setStatus('uploading');
 
-      const formData = new FormData();
-      [...files].forEach((file) => {
-        formData.append('files', file);
-      });
-      formData.append("body", assistantId)
+const rows = [createData('watch?v=lFqxenB9CX8', '33.9MB', '22 Apr 2022, 1:43 PM', 'No tags')]
+const EditBot = () => {
+  const [bot, setBot] = React.useState('')
 
-      try {
-        const result = await fetch(`${constants.uploadLink}/${localStorage.getItem('userId')}`, {
-          method: 'POST',
-          body: formData,
-        });
-
-        const data = await result.json();
-
-        console.log(data);
-        setStatus('success');
-      } catch (error) {
-        console.error(error);
-        setStatus('fail');
-      }
-    }
-  };
+  const handleChange = (event: SelectChangeEvent) => {
+    setBot(event.target.value as string)
+  }
   return (
-    <div>
-      {/* {bot?.id} */}
-      {/* <h1>{props.assistant}</h1> */}
-      {/* <Button onClick={()=>props.updateVal}>update</Button> */}
-      <Formik
-        initialValues={{ name: bot != null ? bot.name : " ", description: " ", model: "gpt-4o", promptName: " ", instructions: " " }}
-        //   validate={values => {
-        //     const errors = {};
-        //     if (!values.email) {
-        //       errors.email = 'Required';
-        //     } else if (
-        //       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-        //     ) {
-        //       errors.email = 'Invalid email address';
-        //     }
-        //     return errors;
-        //   }}
-        onSubmit={(values, { setSubmitting }) => {
-          setSubmitting(false);
-          // setTimeout(() => {
-          //     alert(JSON.stringify(values, null, 2));
-          //     setSubmitting(false);
-          // }, 400);
-          let data = {
-            "name": values.name,
-            "description": values.description,
-            "model": values.model,
-            "instructions": values.instructions,
-            "userid": localStorage.getItem("userId"),
-            "tools": [
-              {
-                "type": "file_search"
-              }
-            ]
+    <Box>
+      <Card>
+        <CardHeader
+          action={
+            <FormControl size="small" fullWidth sx={{ minWidth: 120 }}>
+              <InputLabel id="demo-simple-select-label">Bot</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={bot}
+                label="Age"
+                size="small"
+                onChange={handleChange}
+              >
+                <MenuItem value="Bot1">Bot1</MenuItem>
+                <MenuItem value="Bot2">Bot2</MenuItem>
+                <MenuItem value="Bot3">Bot3</MenuItem>
+              </Select>
+            </FormControl>
           }
-          axios.post<Assistant>(`${constants.link}/${localStorage.getItem("userId")}`, { ...data }).then(res => {
-            let threadData = {
-              "assistantId": res.data.id,
-              "userId": localStorage.getItem("userId")
-            }
-            axios.post(`${constants.createThread}`, threadData).then(res=>{
-              handleUpload(String(threadData.assistantId)).then(res=>{
-                completeSetup(String(threadData.assistantId));
+          title="Bot"
+          subheader="File Upload List"
+        />
 
-              });
-              
-            })
-            console.log(res)
-          }
-          ).catch(err => console.log(err)
-          )
-        }}
-      >
-        {({ isSubmitting }) => (
-
-
-
-          <Form>
-            <div>
-              <div>Name</div>
-              <Field type="text" name="name" />
-            </div>
-            <div>
-              <div>Description</div>
-              <Field type="text" name="description" />
-            </div>
-            <div>
-              <div>Model</div>
-              <Field as="select" name="model" >
-                <option value="" ></option>
-                <option value="gpt-4o">GPT-4o</option>
-                <option value="gpt-4-turbo">GPT-4 Turbo and GPT-4</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-              </Field>
-            </div>
-            <div>
-              <div>Prompt Name</div>
-              <Field type="text" name="promptName" />
-            </div>
-            <div>
-              <div>Prompt Instructions</div>
-              <Field type="textarea" name="instructions" />
-              <ErrorMessage name="password" component="div" />
-            </div>
-
-
-
-            <div>
-              {/* upload files */}
-              <>
-                <h1>Upload files section</h1>
-                <div className="input-group">
-                  <input id="file" type="file" multiple onChange={handleFileChange} />
-                </div>
-
-                {files && [...files].map((file, index) => (
-                  <section key={file.name}>
-                    File number {index + 1} details:
-                    <ul>
-                      <li>Name: {file.name}</li>
-                      <li>Type: {file.type}</li>
-                      <li>Size: {file.size} bytes</li>
-                    </ul>
-                  </section>
+        <CardContent>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
+              <TableHead style={{ backgroundColor: 'skyblue' }}>
+                <TableRow>
+                  <TableCell>File Name</TableCell>
+                  <TableCell align="left">Size</TableCell>
+                  <TableCell align="left">Create Date</TableCell>
+                  <TableCell align="left">Tags</TableCell>
+                  <TableCell align="left">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow
+                    key={row.fileName}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.fileName}
+                    </TableCell>
+                    <TableCell align="left">{row.size}</TableCell>
+                    <TableCell align="left">{row.uploadDate}</TableCell>
+                    <TableCell align="left">{row.tags}</TableCell>
+                    <TableCell align="left">
+                      <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
+                        <Link to="/botConfig">
+                          <Button
+                            component="label"
+                            variant="outlined"
+                            startIcon={<Edit color="info" />}
+                          >
+                            Edit
+                          </Button>
+                        </Link>
+                        <Button
+                          component="label"
+                          variant="outlined"
+                          color="error"
+                          startIcon={<Delete color="error" />}
+                        >
+                          Delete
+                        </Button>
+                      </ButtonGroup>
+                    </TableCell>
+                  </TableRow>
                 ))}
-
-                
-
-                {/* <Result status={status} /> */}
-              </>
-              <button type="submit" disabled={isSubmitting}>
-                Submit
-              </button>
-
-            </div>
-          </Form>
-        )}
-      </Formik>
-
-
-    </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+    </Box>
   )
-
 }
-const Result = ({ status }: { status: string }) => {
-  if (status === 'success') {
-    return <p>✅ File uploaded successfully!</p>;
-  } else if (status === 'fail') {
-    return <p>❌ File upload failed!</p>;
-  } else if (status === 'uploading') {
-    return <p>⏳ Uploading selected file...</p>;
-  } else {
-    return null;
-  }
-};
 
-export default EditList
+export default EditBot

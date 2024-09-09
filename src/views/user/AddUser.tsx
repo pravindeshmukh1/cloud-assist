@@ -140,7 +140,7 @@ const AddUser = () => {
           onClose={handleClose}
           aria-labelledby="responsive-dialog-title"
         >
-          <DialogTitle id="responsive-dialog-title" color="info" borderBottom={1} >
+          <DialogTitle id="responsive-dialog-title" color="info" borderBottom={1}>
             Add User
           </DialogTitle>
           <IconButton
@@ -148,7 +148,7 @@ const AddUser = () => {
             onClick={handleClose}
             sx={(theme) => ({
               position: 'absolute',
-              right: 8,
+              left: 8,
               top: 8,
               color: theme.palette.grey[500],
             })}
@@ -235,12 +235,12 @@ const AddUser = () => {
               <TableHead style={{ backgroundColor: 'skyblue' }}>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  <TableCell align="right">Email</TableCell>
-                  <TableCell align="right">Role</TableCell>
-                  <TableCell align="right">Location</TableCell>
-                  <TableCell align="right">Phone Number</TableCell>
-                  <TableCell align="right">Create Date</TableCell>
-                  <TableCell align="right">Action</TableCell>
+                  <TableCell align="left">Email</TableCell>
+                  <TableCell align="left">Role</TableCell>
+                  <TableCell align="left">Location</TableCell>
+                  <TableCell align="left">Phone Number</TableCell>
+                  <TableCell align="left">Create Date</TableCell>
+                  <TableCell align="left">Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -252,12 +252,14 @@ const AddUser = () => {
                     <TableCell component="th" scope="row">
                       {row.name}
                     </TableCell>
-                    <TableCell align="right">{row.role}</TableCell>
-                    <TableCell align="right">{row.email}</TableCell>
-                    <TableCell align="right">{row.location}</TableCell>
-                    <TableCell align="right">{row.phoneNumber}</TableCell>
-                    <TableCell align="right">{row.createDate}</TableCell>
-                    <TableCell align="right">
+                    <TableCell align="left">
+                      <Chip label={row.role} variant="filled" color="success" />
+                    </TableCell>
+                    <TableCell align="left">{row.email}</TableCell>
+                    <TableCell align="left">{row.location}</TableCell>
+                    <TableCell align="left">{row.phoneNumber}</TableCell>
+                    <TableCell align="left">{row.createDate}</TableCell>
+                    <TableCell align="left">
                       <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
                         <Button
                           component="label"
