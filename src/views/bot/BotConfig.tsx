@@ -186,7 +186,7 @@ const BotConfig = () => {
           <form onSubmit={handleSubmit}>
             <Paper sx={{ width: '55ch' }}>
               <Card>
-                <CardHeader title="Create Bot Config" />
+                <CardHeader title="Bot Config" />
                 <CardContent>
                   <TextField
                     label="Name"
