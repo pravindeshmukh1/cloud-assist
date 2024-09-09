@@ -132,6 +132,7 @@ const AddUser = () => {
           }
           title="User List"
           subheader=""
+          titleTypographyProps={{ fontSize: 18 }}
         />
 
         <Dialog

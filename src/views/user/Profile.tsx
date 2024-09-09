@@ -1,17 +1,12 @@
-import { Title } from '@mui/icons-material'
 import {
-  Avatar,
-  Button,
+  Box,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   Chip,
   Container,
   Divider,
-  makeStyles,
   Paper,
-  TextField,
   Typography,
 } from '@mui/material'
 
@@ -21,20 +16,35 @@ const Profile = () => {
       <Container>
         <Paper>
           <Card>
-            <CardHeader subheader="Account Details"  />
+            <CardHeader
+              title="Account Details"
+              sx={{ backgroundColor: 'skyblue' }}
+              titleTypographyProps={{ fontSize: 18 }}
+            />
             <Divider />
-            <CardContent>
-              <Typography variant="body2" gutterBottom>
-                Email: raj@gmail.com
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                Status:
-                <Chip label="Active" variant="outlined" color="info" />
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                Role:
-                <Chip label="Admin" variant="filled" color="primary" />
-              </Typography>
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
+                <Typography variant="body2" gutterBottom>
+                  Email :
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  raj@gmail.com
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
+                <Typography variant="body2" gutterBottom>
+                  Status :
+                </Typography>
+                <Chip label="Active" variant="outlined" color="primary" />
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+                <Typography variant="body2" gutterBottom>
+                  Role :
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  Admin
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
         </Paper>

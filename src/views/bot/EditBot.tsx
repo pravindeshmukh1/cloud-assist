@@ -56,6 +56,8 @@ const EditBot = () => {
           }
           title="Bot"
           subheader="File Upload List"
+          titleTypographyProps={{ fontSize: 18 }}
+          subheaderTypographyProps={{ fontSize: 18 }}
         />
 
         <CardContent>

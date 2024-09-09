@@ -231,14 +231,14 @@ const BotList = () => {
       {bot.length > 0 ? (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
           <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
+            <Table stickyHeader aria-label="sticky table" size="small">
+              <TableHead style={{ backgroundColor: 'skyblue' }}>
                 <TableRow>
                   {columns.map((column) => (
                     <TableCell
                       key={column.id}
                       align={column.align}
-                      style={{ minWidth: column.minWidth }}
+                      style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
                     >
                       {column.label}
                     </TableCell>
