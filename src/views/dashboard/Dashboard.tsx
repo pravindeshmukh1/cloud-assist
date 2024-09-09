@@ -26,7 +26,10 @@ import {
 import SendIcon from '@mui/icons-material/Send'
 import { GridDeleteIcon } from '@mui/x-data-grid'
 import { useParams, useSearchParams } from 'react-router-dom'
-
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
+import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt'
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt'
 const Dashboard = () => {
 
   const [searchParam,setSearchParam]=useSearchParams();
@@ -315,45 +318,22 @@ const Dashboard = () => {
                             <>
                               <Markdown>{res.message}</Markdown>
                               <Typography variant="body2">{res.msgBy}</Typography>
-                              {/* <Box
-                                direction="row"
-                                sx={{
-                                  justifyContent: 'flex-end',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                <IconButton aria-label="delete">
-                                  <GridDeleteIcon />
-                                </IconButton>
-                                <IconButton aria-label="delete" disabled color="primary">
-                                  <GridDeleteIcon />
-                                </IconButton>
-                              </Box> */}
                               <Stack
                                 direction="row"
                                 useFlexGap
                                 sx={{ justifyContent: 'flex-end', alignItems: 'center' }}
                               >
-                                <IconButton aria-label="delete">
-                                  <GridDeleteIcon />
+                                <IconButton >
+                                  <ThumbUpOffAltIcon />
                                 </IconButton>
-                                <IconButton aria-label="delete" disabled color="primary">
-                                  <GridDeleteIcon />
+                                <IconButton >
+                                  <ThumbDownOffAltIcon />
                                 </IconButton>
                               </Stack>
                             </>
                           )
                         })}
                         <hr className="mt-2" />
-                        {/* <p className="mb-1">
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consequuntur rem
-                        corporis cum beatae perspiciatis excepturi dignissimos delectus vero ullam
-                        consequatur vel nihil non, voluptatem fugit, mollitia et eum eos facere.
-                      </p>
-                      <div className="text-end">
-                        <i className="bx bx-like px-1 btn"></i>
-                        <i className="bx bx-dislike px-1 btn"></i>
-                      </div> */}
                       </div>
                     </div>
                   </div>
