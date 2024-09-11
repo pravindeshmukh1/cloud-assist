@@ -19,7 +19,7 @@ const History = () => {
       "model":""
   }]);
   useEffect(() => {
-    axios.post<HistoryI[]>(`${constants.getHistory}/${localStorage.getItem("userId")}/id/asst_IvYaMqtb6TsKpur4hF6J7RJU`)
+    axios.post<HistoryI[]>(`${constants.getHistory}/${localStorage.getItem("userId")}`)
     .then(res=>{
       console.log(res.data);
      

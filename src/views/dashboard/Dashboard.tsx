@@ -132,6 +132,7 @@ const Dashboard = () => {
                     asstId: activeBot?.assistantId,
                     threadId: activeBot?.threadId,
                     text: values.msg,
+                    userId:localStorage.getItem("userId")
                   }
 
                   axios
