@@ -20,7 +20,12 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import { Delete, Edit } from '@mui/icons-material'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import axios from 'axios'
+import constants from '../../constants'
+import { useState } from 'react'
+import { Assistant, Bot,Document } from '../../interface'
+
 
 function createData(fileName: string, size: string, uploadDate: string, tags: string) {
   return { fileName, size, uploadDate, tags }
@@ -28,9 +33,33 @@ function createData(fileName: string, size: string, uploadDate: string, tags: st
 
 const rows = [createData('watch?v=lFqxenB9CX8', '33.9MB', '22 Apr 2022, 1:43 PM', 'No tags')]
 const EditBot = () => {
-  const [bot, setBot] = React.useState('')
-
+  const location = useLocation()
+  const state = location.state
+  const [assistant, setassistant] = useState<Bot[]>()
+  const [documents, setdocuments] = useState<Document[]>()
+  const [bot, setBot] = React.useState("")
+  if(state!=null){
+    // setBot(state.botVal)
+  }
+  React.useEffect(() => {
+  
+    axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res=>{
+      setassistant(res.data);
+      if(state!=null){
+      setBot(state.botVal)
+      }else{
+        setBot(res.data[0].assistantId)
+      }
+    })
+  }, [])
+  React.useEffect(() => {
+    if(bot!=null){
+    axios.post<Document[]>(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${bot}`).then(res=>{
+      setdocuments(res.data);
+    })}
+  }, [bot])
   const handleChange = (event: SelectChangeEvent) => {
+    alert(event.target.value as string)
     setBot(event.target.value as string)
   }
   return (
@@ -48,9 +77,11 @@ const EditBot = () => {
                 size="small"
                 onChange={handleChange}
               >
-                <MenuItem value="Bot1">Bot1</MenuItem>
-                <MenuItem value="Bot2">Bot2</MenuItem>
-                <MenuItem value="Bot3">Bot3</MenuItem>
+              {assistant?.map((res:Bot)=>{
+                return(               
+                  <MenuItem key={res.assistantId} value={res.assistantId}>{res.name}</MenuItem> 
+                )
+              })}
               </Select>
             </FormControl>
           }
@@ -61,6 +92,7 @@ const EditBot = () => {
         />
 
         <CardContent>
+          {documents?.length}
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
               <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -73,20 +105,20 @@ const EditBot = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {documents?.map((row) => (
                   <TableRow
-                    key={row.fileName}
+                    key={row.documentId}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {row.fileName}
+                      {row.docName}
                     </TableCell>
-                    <TableCell align="left">{row.size}</TableCell>
-                    <TableCell align="left">{row.uploadDate}</TableCell>
-                    <TableCell align="left">{row.tags}</TableCell>
+                    <TableCell align="left">{row.docSize}</TableCell>
+                    <TableCell align="left">{row.uploadedDt}</TableCell>
+                    <TableCell align="left">{row.status}</TableCell>
                     <TableCell align="left">
                       <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
-                        <Link to="/botConfig">
+                        <Link to="/editBotConfig" state={{row:documents,assistant:assistant?.filter(res=>res.assistantId==bot)}}>
                           <Button
                             component="label"
                             variant="outlined"

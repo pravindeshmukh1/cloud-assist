@@ -247,18 +247,26 @@ const BotList = () => {
               </TableHead>
               <TableBody>
                 {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                  function deletAssistant(assistantId: string) {
+                    axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
+                   
+                  }
+
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       {columns.map((column) => {
                         const value = row[column.id]
                         return (
+                          <>
                           <TableCell key={column.id} align={column.align}>
                             {column.format && typeof value === 'number'
                               ? column.format(value)
                               : value}
                           </TableCell>
+                          </>
                         )
                       })}
+                      <TableCell><Button onClick={deletAssistant(row.assistantId)}>Delete</Button></TableCell>
                     </TableRow>
                   )
                 })}

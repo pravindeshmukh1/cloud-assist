@@ -102,26 +102,45 @@ const Dashboard = () => {
           })}
         </select> */}
 
-          <div className="content-wrapper">
-            <div className="container-xxl flex-grow-1 container-p-y pt-0">
-              <div className="col-md-12">
-                <Formik
-                  initialValues={{ msg: ' ' }}
-                  //   validate={values => {
-                  //     const errors = {};
-                  //     if (!values.email) {
-                  //       errors.email = 'Required';
-                  //     } else if (
-                  //       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                  //     ) {
-                  //       errors.email = 'Invalid email address';
-                  //     }
-                  //     return errors;
-                  //   }}
-                  onSubmit={(values, { setSubmitting, resetForm }) => {
-                    console.log('🚀 ~ values:', values)
-                    setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2))
+        <div className="content-wrapper">
+          <div className="container-xxl flex-grow-1 container-p-y pt-0">
+            <div className="col-md-12">
+              <Formik
+                initialValues={{ msg: ' ' }}
+                //   validate={values => {
+                //     const errors = {};
+                //     if (!values.email) {
+                //       errors.email = 'Required';
+                //     } else if (
+                //       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                //     ) {
+                //       errors.email = 'Invalid email address';
+                //     }
+                //     return errors;
+                //   }}
+                onSubmit={(values, { setSubmitting,resetForm }) => {
+                  console.log('🚀 ~ values:', values)
+                  setTimeout(() => {
+                      alert(JSON.stringify(values, null, 2));
+                      setSubmitting(false);
+                  }, 400);
+                  let data: Message = {
+                    id: 1,
+                    message: values.msg,
+                    msgBy: 'user',
+                  }
+                  setMessages((msg) => [...msg, data])
+                  let post = {
+                    asstId: activeBot?.assistantId,
+                    threadId: activeBot?.threadId,
+                    text: values.msg,
+                    userId:localStorage.getItem("userId")
+                  }
+
+                  axios
+                    .post<MsgResponse>(constants.chatLink, post)
+                    .then((res) => {
+                      console.log(res)
                       setSubmitting(false)
                     }, 400)
                     let data: Message = {

@@ -50,3 +50,16 @@ export interface Assistant {
   createdDt: string,
   expireDt: string
 }
+
+export interface Document{
+    id: number,
+    status: string,
+    assistantId: string,
+    userId: number,
+    documentId: string,
+    docType: string,
+    docSize: string,
+    docName: string,
+    uploadedDt: string,
+    removedDt: string
+}

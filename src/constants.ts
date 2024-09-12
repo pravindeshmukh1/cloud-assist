@@ -1,6 +1,7 @@
 const baseurl = 'http://localhost:8080'
 const constants = {
   link: `${baseurl}/assistant/create`,
+  modifyAssistant: `${baseurl}/assistant/modify`,
   uploadLink: `${baseurl}/assistant/file/upload`,
   getAssistant: `${baseurl}/assistant/id`,
   uploadLocalFiles: `${baseurl}/assistant/file/update`,
@@ -10,7 +11,8 @@ const constants = {
   chatLink: `${baseurl}/runner/chat`,
   deleteAssistant: `${baseurl}/assistant`,
   getHistory: `${baseurl}/history`,
-  createThread:`${baseurl}/thread/create`
+  createThread:`${baseurl}/thread/create`,
+  getDocuments:`${baseurl}/document/list`
 }
 // asst_UWIlkTxmN1HnKyFY9j5RavlS
 Object.freeze(constants)
