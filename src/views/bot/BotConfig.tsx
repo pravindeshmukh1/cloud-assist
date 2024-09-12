@@ -12,6 +12,8 @@ import {
   CardHeader,
   Chip,
   FormControl,
+  FormControlLabel,
+  IconButton,
   InputAdornment,
   InputLabel,
   List,
@@ -22,7 +24,9 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
+  Stack,
   styled,
+  Switch,
   TextField,
   Typography,
 } from '@mui/material'
@@ -32,6 +36,9 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import HdrStrongOutlinedIcon from '@mui/icons-material/HdrStrongOutlined'
 import HdrWeakOutlinedIcon from '@mui/icons-material/HdrWeakOutlined'
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import MoreTimeIcon from '@mui/icons-material/MoreTime'
+import { Label } from '@mui/icons-material'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -44,6 +51,19 @@ const VisuallyHiddenInput = styled('input')({
   whiteSpace: 'nowrap',
   width: 1,
 })
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}))
+
+const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 const BotConfig = () => {
   const [status1, setStatus1] = useState<boolean>(false)
   const bot: Bot = {
@@ -122,6 +142,77 @@ const BotConfig = () => {
   const handleModelChange = (event: SelectChangeEvent) => {
     setModel(event.target.value)
   }
+
+  //Bot Schedule
+
+  // Initialize state with an empty array for each weekday and enabled status
+  const [schedules, setSchedules] = useState(
+    weekdays.reduce((acc, day) => {
+      acc[day] = [{ startTime: '09:00', endTime: '17:00' }]
+      return acc
+    }, {}),
+  )
+
+  const [enabledStatus, setEnabledStatus] = useState(
+    weekdays.reduce((acc, day) => {
+      acc[day] = true // Default all days to enabled
+      return acc
+    }, {}),
+  )
+
+  const [selectedDay, setSelectedDay] = useState(weekdays[0])
+
+  const addSchedule = () => {
+    setSchedules((prevSchedules) => ({
+      ...prevSchedules,
+      [selectedDay]: [...prevSchedules[selectedDay], { startTime: '09:00', endTime: '17:00' }],
+    }))
+  }
+
+  const handleChange = (index, field, value) => {
+    if (!enabledStatus[selectedDay]) return // Prevent changes if disabled
+
+    setSchedules((prevSchedules) => {
+      const updatedSchedules = prevSchedules[selectedDay].map((schedule, i) => {
+        if (i === index) {
+          const newSchedule = { ...schedule, [field]: value }
+
+          // Validate time
+          if (field === 'startTime' && newSchedule.startTime > newSchedule.endTime) {
+            return schedule // Invalid start time
+          } else if (field === 'endTime' && newSchedule.endTime < newSchedule.startTime) {
+            return schedule // Invalid end time
+          }
+
+          return newSchedule
+        }
+        return schedule
+      })
+
+      return {
+        ...prevSchedules,
+        [selectedDay]: updatedSchedules,
+      }
+    })
+  }
+
+  const removeSchedule = (index) => {
+    setSchedules((prevSchedules) => {
+      const updatedSchedules = prevSchedules[selectedDay].filter((_, i) => i !== index)
+
+      return {
+        ...prevSchedules,
+        [selectedDay]: updatedSchedules,
+      }
+    })
+  }
+
+  const toggleDayStatus = () => {
+    setEnabledStatus((prevStatus) => ({
+      ...prevStatus,
+      [selectedDay]: !prevStatus[selectedDay],
+    }))
+  }
   return (
     <Card>
       {/* {bot?.id} */}
@@ -184,168 +275,253 @@ const BotConfig = () => {
       >
         {({ values, isSubmitting, handleChange, handleBlur, handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <Paper sx={{ width: '55ch' }}>
+            <Paper>
               <Card>
                 <CardHeader title="Bot Config" />
                 <CardContent>
-                  <TextField
-                    label="Name"
-                    name="name"
-                    value={values.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    margin="normal"
-                    id="outlined-size-small"
-                    size="small"
-                    fullWidth
-                    slotProps={{
-                      input: {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SmartToyOutlinedIcon color="info" fontSize="inherit" />
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                  />
-                  <TextField
-                    label="Description"
-                    name="description"
-                    value={values.description}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    margin="normal"
-                    id="outlined-size-small"
-                    size="small"
-                    fullWidth
-                    slotProps={{
-                      input: {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <DescriptionOutlinedIcon color="info" fontSize="inherit" />
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                  />
+                  <Stack direction="row" spacing={2}>
+                    <Item>
+                      <TextField
+                        label="Name"
+                        name="name"
+                        value={values.name}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        margin="normal"
+                        id="outlined-size-small"
+                        size="small"
+                        fullWidth
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <SmartToyOutlinedIcon color="info" fontSize="inherit" />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
+                      />
+                      <TextField
+                        label="Description"
+                        name="description"
+                        value={values.description}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        margin="normal"
+                        id="outlined-size-small"
+                        size="small"
+                        fullWidth
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <DescriptionOutlinedIcon color="info" fontSize="inherit" />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
+                      />
 
-                  <FormControl size="small" fullWidth sx={{ marginTop: 1, marginBottom: 1 }}>
-                    <InputLabel id="demo-select-small-label">Model</InputLabel>
-                    <Select
-                      labelId="demo-select-small-label"
-                      id="demo-select-small"
-                      value={model}
-                      label="Model"
-                      onChange={handleModelChange}
-                    >
-                      <MenuItem value="">
-                        <em>None</em>
-                      </MenuItem>
-                      <MenuItem value="gpt-4o">GPT-4o</MenuItem>
-                      <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
-                      <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
-                    </Select>
-                  </FormControl>
+                      <FormControl size="small" fullWidth sx={{ marginTop: 1, marginBottom: 1 }}>
+                        <InputLabel id="demo-select-small-label">Model</InputLabel>
+                        <Select
+                          labelId="demo-select-small-label"
+                          id="demo-select-small"
+                          value={model}
+                          label="Model"
+                          onChange={handleModelChange}
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          <MenuItem value="gpt-4o">GPT-4o</MenuItem>
+                          <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
+                          <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
+                        </Select>
+                      </FormControl>
 
-                  <TextField
-                    label="Prompt Name"
-                    name="promptName"
-                    value={values.promptName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    margin="normal"
-                    id="outlined-size-small"
-                    size="small"
-                    fullWidth
-                    slotProps={{
-                      input: {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <HdrStrongOutlinedIcon color="info" fontSize="inherit" />
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                  />
-                  <TextField
-                    multiline
-                    label="Prompt Instructions"
-                    name="instructions"
-                    value={values.instructions}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    margin="normal"
-                    id="outlined-size-small"
-                    size="small"
-                    fullWidth
-                    slotProps={{
-                      input: {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <HdrWeakOutlinedIcon color="info" fontSize="inherit" />
-                          </InputAdornment>
-                        ),
-                      },
-                    }}
-                  />
+                      <TextField
+                        label="Prompt Name"
+                        name="promptName"
+                        value={values.promptName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        margin="normal"
+                        id="outlined-size-small"
+                        size="small"
+                        fullWidth
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <HdrStrongOutlinedIcon color="info" fontSize="inherit" />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
+                      />
+                      <TextField
+                        multiline
+                        label="Prompt Instructions"
+                        name="instructions"
+                        value={values.instructions}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        margin="normal"
+                        id="outlined-size-small"
+                        size="small"
+                        fullWidth
+                        slotProps={{
+                          input: {
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <HdrWeakOutlinedIcon color="info" fontSize="inherit" />
+                              </InputAdornment>
+                            ),
+                          },
+                        }}
+                      />
 
-                  <Button
-                    component="label"
-                    // role={undefined}
-                    variant="outlined"
-                    tabIndex={-1}
-                    startIcon={<CloudUploadIcon />}
-                    fullWidth
-                    sx={{ p: 10, border: '1px dashed grey', marginTop: 2, marginBottom: 0 }}
-                  >
-                    file here to upload
-                    <VisuallyHiddenInput
-                      type="file"
-                      id="file"
-                      onChange={handleFileChange}
-                      multiple
-                    />
-                  </Button>
-                  <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
-                    <Typography color="gray" fontSize={13} padding={0}>
-                      <b>Supported Formats:</b> - Words, TXT, Excel, PDF Doc, DocX, PPT, PPTX, XLS,
-                      XLSX, CSV Google Docs, Google Sheet, Google Slides , SQL Videos - MP4, MOV,
-                      WMV
-                    </Typography>
-                  </Box>
-                  <Box>
-                    {files &&
-                      [...files].map((file, index) => (
-                        // <section key={file.name}>
-                        //   File number {index + 1} details:
-                        //   <ul>
-                        //     <li>Name: {file.name}</li>
-                        //     <li>Type: {file.type}</li>
-                        //     <li>Size: {file.size} bytes</li>
-                        //   </ul>
-                        // </section>
-                        <Box key={file.name}>
-                          <List>
-                            <ListItem className="flex-row gap-2">
-                              <Chip
+                      <Button
+                        component="label"
+                        // role={undefined}
+                        variant="outlined"
+                        tabIndex={-1}
+                        startIcon={<CloudUploadIcon />}
+                        fullWidth
+                        sx={{ p: 10, border: '1px dashed grey', marginTop: 2, marginBottom: 0 }}
+                      >
+                        file here to upload
+                        <VisuallyHiddenInput
+                          type="file"
+                          id="file"
+                          onChange={handleFileChange}
+                          multiple
+                        />
+                      </Button>
+                      <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
+                        <Typography color="gray" fontSize={13} padding={0}>
+                          <b>Supported Formats:</b> - Words, TXT, Excel, PDF Doc, DocX, PPT, PPTX,
+                          XLS, XLSX, CSV Google Docs, Google Sheet, Google Slides , SQL Videos -
+                          MP4, MOV, WMV
+                        </Typography>
+                      </Box>
+                      <Box>
+                        {files &&
+                          [...files].map((file, index) => (
+                            // <section key={file.name}>
+                            //   File number {index + 1} details:
+                            //   <ul>
+                            //     <li>Name: {file.name}</li>
+                            //     <li>Type: {file.type}</li>
+                            //     <li>Size: {file.size} bytes</li>
+                            //   </ul>
+                            // </section>
+                            <Box key={file.name}>
+                              <List>
+                                <ListItem className="flex-row gap-2">
+                                  <Chip
+                                    variant="outlined"
+                                    color="info"
+                                    size="small"
+                                    label={index + 1}
+                                  />
+                                  <ListItemText primary={file.name} secondary={file.type} />
+                                  <ListItemButton sx={{ fontSize: '14px' }} disabled>
+                                    Size: {file.size} bytes
+                                  </ListItemButton>
+                                </ListItem>
+                              </List>
+                            </Box>
+                          ))}
+                      </Box>
+                    </Item>
+                    <Item sx={{ minWidth: '20vw' }}>
+                      <InputLabel htmlFor="input-with-icon-adornment" sx={{ mb: 2, float: 'left' }}>
+                        Schedule Bot
+                      </InputLabel>
+
+                      <FormControl fullWidth>
+                        <InputLabel>Select Day</InputLabel>
+                        <Select
+                          value={selectedDay}
+                          onChange={(e) => setSelectedDay(e.target.value)}
+                          label="Select Day"
+                          size="small"
+                        >
+                          {weekdays.map((day) => (
+                            <MenuItem key={day} value={day}>
+                              {day}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={enabledStatus[selectedDay]}
+                            onChange={toggleDayStatus}
+                            color="primary"
+                            size="small"
+                          />
+                        }
+                        label={enabledStatus[selectedDay] ? 'Enabled' : 'Disabled'}
+                      />
+
+                      {enabledStatus[selectedDay] ? (
+                        <>
+                          {schedules[selectedDay].map((schedule, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                marginBottom: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <TextField
                                 variant="outlined"
-                                color="info"
+                                type="time"
                                 size="small"
-                                label={index + 1}
+                                value={schedule.startTime}
+                                onChange={(e) => handleChange(index, 'startTime', e.target.value)}
                               />
-                              <ListItemText primary={file.name} secondary={file.type} />
-                              <ListItemButton sx={{ fontSize: '14px' }} disabled>
-                                Size: {file.size} bytes
-                              </ListItemButton>
-                            </ListItem>
-                          </List>
-                        </Box>
-                      ))}
-                  </Box>
-                  <CardActions sx={{ float: 'left' }}>
-                    {/* <Button type="submit" variant="outlined" disabled={isSubmitting}>
-                    Save
-                  </Button> */}
+                              <span> - </span>
+                              <TextField
+                                variant="outlined"
+                                type="time"
+                                size="small"
+                                value={schedule.endTime}
+                                onChange={(e) => handleChange(index, 'endTime', e.target.value)}
+                              />
+                              <IconButton
+                                color="error"
+                                onClick={() => removeSchedule(index)}
+                                style={{ marginLeft: '10px' }}
+                              >
+                                <DeleteForeverIcon />
+                              </IconButton>
+                            </div>
+                          ))}
+                          <Button
+                            variant="contained"
+                            color="success"
+                            size="small"
+                            onClick={addSchedule}
+                            startIcon={<MoreTimeIcon />}
+                          >
+                            Add Time Schedule
+                          </Button>
+                        </>
+                      ) : (
+                        <p>Schedules are disabled for this day.</p>
+                      )}
+                    </Item>
+                  </Stack>
+
+                  <CardActions sx={{ float: 'right' }}>
                     <Button
                       variant="contained"
                       type="submit"
