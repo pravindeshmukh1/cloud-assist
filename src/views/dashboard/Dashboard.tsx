@@ -130,30 +130,30 @@ const Dashboard = () => {
                     msgBy: 'user',
                   }
                   setMessages((msg) => [...msg, data])
-                  let post = {
-                    asstId: activeBot?.assistantId,
-                    threadId: activeBot?.threadId,
-                    text: values.msg,
-                    userId:localStorage.getItem("userId")
-                  }
+                  // let post = {
+                  //   asstId: activeBot?.assistantId,
+                  //   threadId: activeBot?.threadId,
+                  //   text: values.msg,
+                  //   userId:localStorage.getItem("userId")
+                  // }
 
-                  axios
-                    .post<MsgResponse>(constants.chatLink, post)
-                    .then((res) => {
-                      console.log(res)
-                      setSubmitting(false)
-                    }, 400)
-                    let data: Message = {
-                      id: 1,
-                      message: values.msg,
-                      msgBy: 'user',
-                    }
-                    setMessages((msg) => [...msg, data])
-                    let post = {
-                      asstId: activeBot?.assistantId,
-                      threadId: activeBot?.threadId,
-                      text: values.msg,
-                    }
+                  // axios
+                  //   .post<MsgResponse>(constants.chatLink, post)
+                  //   .then((res) => {
+                  //     console.log(res)
+                  //     setSubmitting(false)
+                  //   }, 400)
+                  //   let data: Message = {
+                  //     id: 1,
+                  //     message: values.msg,
+                  //     msgBy: 'user',
+                  //   }
+                  //   setMessages((msg) => [...msg, data])
+                  //   let post = {
+                  //     asstId: activeBot?.assistantId,
+                  //     threadId: activeBot?.threadId,
+                  //     text: values.msg,
+                  //   }
 
                     axios
                       .post<MsgResponse>(constants.chatLink, post)
