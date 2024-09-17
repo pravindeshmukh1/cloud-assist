@@ -11,6 +11,8 @@ import Markdown from 'react-markdown'
 import {
   Box,
   Card,
+  CardContent,
+  Chip,
   FormControl,
   IconButton,
   Input,
@@ -91,7 +93,7 @@ const Dashboard = () => {
 
   return (
     <>
-      {!(bot.length > 0) ? (
+      {!(bot.length == 0) ? (
         <div>{'No bots avalaible Please create one'}</div>
       ) : (
         <div>
@@ -102,58 +104,58 @@ const Dashboard = () => {
           })}
         </select> */}
 
-        <div className="content-wrapper">
-          <div className="container-xxl flex-grow-1 container-p-y pt-0">
-            <div className="col-md-12">
-              <Formik
-                initialValues={{ msg: ' ' }}
-                //   validate={values => {
-                //     const errors = {};
-                //     if (!values.email) {
-                //       errors.email = 'Required';
-                //     } else if (
-                //       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                //     ) {
-                //       errors.email = 'Invalid email address';
-                //     }
-                //     return errors;
-                //   }}
-                onSubmit={(values, { setSubmitting,resetForm }) => {
-                  console.log('🚀 ~ values:', values)
-                  setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2));
-                      setSubmitting(false);
-                  }, 400);
-                  let data: Message = {
-                    id: 1,
-                    message: values.msg,
-                    msgBy: 'user',
-                  }
-                  setMessages((msg) => [...msg, data])
-                  // let post = {
-                  //   asstId: activeBot?.assistantId,
-                  //   threadId: activeBot?.threadId,
-                  //   text: values.msg,
-                  //   userId:localStorage.getItem("userId")
-                  // }
+          <div className="content-wrapper">
+            <div className="container-xxl flex-grow-1 container-p-y pt-0">
+              <div className="col-md-12">
+                <Formik
+                  initialValues={{ msg: ' ' }}
+                  //   validate={values => {
+                  //     const errors = {};
+                  //     if (!values.email) {
+                  //       errors.email = 'Required';
+                  //     } else if (
+                  //       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                  //     ) {
+                  //       errors.email = 'Invalid email address';
+                  //     }
+                  //     return errors;
+                  //   }}
+                  onSubmit={(values, { setSubmitting, resetForm }) => {
+                    console.log('🚀 ~ values:', values)
+                    setTimeout(() => {
+                      alert(JSON.stringify(values, null, 2))
+                      setSubmitting(false)
+                    }, 400)
+                    let data: Message = {
+                      id: 1,
+                      message: values.msg,
+                      msgBy: 'user',
+                    }
+                    setMessages((msg) => [...msg, data])
+                    // let post = {
+                    //   asstId: activeBot?.assistantId,
+                    //   threadId: activeBot?.threadId,
+                    //   text: values.msg,
+                    //   userId:localStorage.getItem("userId")
+                    // }
 
-                  // axios
-                  //   .post<MsgResponse>(constants.chatLink, post)
-                  //   .then((res) => {
-                  //     console.log(res)
-                  //     setSubmitting(false)
-                  //   }, 400)
-                  //   let data: Message = {
-                  //     id: 1,
-                  //     message: values.msg,
-                  //     msgBy: 'user',
-                  //   }
-                  //   setMessages((msg) => [...msg, data])
-                  //   let post = {
-                  //     asstId: activeBot?.assistantId,
-                  //     threadId: activeBot?.threadId,
-                  //     text: values.msg,
-                  //   }
+                    // axios
+                    //   .post<MsgResponse>(constants.chatLink, post)
+                    //   .then((res) => {
+                    //     console.log(res)
+                    //     setSubmitting(false)
+                    //   }, 400)
+                    //   let data: Message = {
+                    //     id: 1,
+                    //     message: values.msg,
+                    //     msgBy: 'user',
+                    //   }
+                    //   setMessages((msg) => [...msg, data])
+                    //   let post = {
+                    //     asstId: activeBot?.assistantId,
+                    //     threadId: activeBot?.threadId,
+                    //     text: values.msg,
+                    //   }
 
                     axios
                       .post<MsgResponse>(constants.chatLink, post)
@@ -231,8 +233,18 @@ const Dashboard = () => {
                     </div>
              )}
            </Field> */}
-                        <Stack direction="row" spacing={1} sx={{ mb: 4 }}>
-                          <FormControl sx={{ m: 1, minWidth: 80, mb: 4 }} size="small">
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{
+                            mb: 4,
+                            flexWrap: 'wrap',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            rowGap: 2,
+                          }}
+                        >
+                          <FormControl sx={{ m: 1, minWidth: 80, mb: 1 }} size="small">
                             <InputLabel id="demo-simple-select-label">Bot</InputLabel>
                             <Select
                               labelId="demo-simple-select-label"
@@ -253,7 +265,7 @@ const Dashboard = () => {
                             <Field name="msg">
                               {({ field }) => (
                                 <>
-                                  <div style={{ display: 'flex' }}>
+                                  {/* <div style={{ display: 'flex' }}>
                                     <input
                                       type="text"
                                       className="form-control form-control-lg shadow-none ps-1 ps-sm-2 rounded-pill"
@@ -283,48 +295,51 @@ const Dashboard = () => {
                                     <IconButton style={{ marginLeft: '-80px' }}>
                                       <MicIcon color="action" fontSize="small" />
                                     </IconButton>
-                                  </div>
-                                  {/* <TextField
-                                    {...field}
-                                    onChange={handleChange}
-                                    variant="outlined"
-                                    label="Ask the Question"
-                                    size="small"
-                                    // placeholder="Ask the Question"
-                                    // multiline
-                                    minRows={1} // Minimum number of rows
-                                    maxRows={10} // Maximum number of rows before scroll appears
-                                    value={text}
-                                    InputLabelProps={{
-                                      sx: {},
-                                    }}
-                                    sx={{
-                                      '& .MuiInputBase-root': {
-                                        // fontSize: '16px',
-                                        padding: '1px',
-                                        paddingLeft: '10px',
-                                        lineHeight: '1',
-                                        minWidth: '800px',
-                                        maxWidth: '200px',
-                                        backgroundColor: '#fff',
-                                        borderRadius: '30px',
-                                      },
-                                    }}
-                                    slotProps={{
-                                      input: {
-                                        endAdornment: (
-                                          <InputAdornment position="start">
-                                            <IconButton>
-                                              <MicIcon color="action" fontSize="small" />
-                                            </IconButton>
-                                            <IconButton type="submit" disabled={isSubmitting}>
-                                              <SendIcon color="action" fontSize="small" />
-                                            </IconButton>
-                                          </InputAdornment>
-                                        ),
-                                      },
-                                    }}
-                                  /> */}
+                                  </div> */}
+                                  <Box sx={{ minWidth: '50vw', maxWidth: '100%' }}>
+                                    <TextField
+                                      fullWidth
+                                      {...field}
+                                      onChange={handleChange}
+                                      variant="outlined"
+                                      label="Ask the Question"
+                                      size="small"
+                                      // placeholder="Ask the Question"
+                                      // multiline
+                                      minRows={1} // Minimum number of rows
+                                      maxRows={10} // Maximum number of rows before scroll appears
+                                      value={text}
+                                      InputLabelProps={{
+                                        sx: {},
+                                      }}
+                                      sx={{
+                                        '& .MuiInputBase-root': {
+                                          // fontSize: '16px',
+                                          padding: '1px',
+                                          paddingLeft: '10px',
+                                          lineHeight: '1',
+                                          // minWidth: '800px',
+                                          // maxWidth: '200px',
+                                          backgroundColor: '#fff',
+                                          borderRadius: '30px',
+                                        },
+                                      }}
+                                      slotProps={{
+                                        input: {
+                                          endAdornment: (
+                                            <InputAdornment position="start">
+                                              <IconButton>
+                                                <MicIcon color="action" fontSize="small" />
+                                              </IconButton>
+                                              <IconButton type="submit" disabled={isSubmitting}>
+                                                <SendIcon color="action" fontSize="small" />
+                                              </IconButton>
+                                            </InputAdornment>
+                                          ),
+                                        },
+                                      }}
+                                    />
+                                  </Box>
                                 </>
                               )}
                             </Field>
@@ -346,24 +361,48 @@ const Dashboard = () => {
                           {messages.map((res) => {
                             return (
                               <>
-                                <Markdown>{res.message}</Markdown>
-                                <Typography variant="body2">{res.msgBy}</Typography>
-                                <Stack
-                                  direction="row"
-                                  useFlexGap
-                                  sx={{ justifyContent: 'flex-end', alignItems: 'center' }}
+                                <Card
+                                  sx={{
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                    m: 0.5,
+                                  }}
                                 >
-                                  <IconButton>
-                                    <ThumbUpOffAltIcon />
-                                  </IconButton>
-                                  <IconButton>
-                                    <ThumbDownOffAltIcon />
-                                  </IconButton>
-                                </Stack>
+                                  <CardContent>
+                                    <Markdown>{res.message}</Markdown>
+                                    <Stack
+                                      direction="row"
+                                      sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+                                    >
+                                      {res.msgBy === 'AI' ? (
+                                        <Chip
+                                          label={res.msgBy}
+                                          color="default"
+                                          variant="outlined"
+                                          size="small"
+                                        />
+                                      ) : (
+                                        <Chip
+                                          label={res.msgBy}
+                                          color="primary"
+                                          variant="outlined"
+                                          size="small"
+                                        />
+                                      )}
+                                      <Box>
+                                        <IconButton size="small">
+                                          <ThumbUpOffAltIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton size="small">
+                                          <ThumbDownOffAltIcon fontSize="small" />
+                                        </IconButton>
+                                      </Box>
+                                    </Stack>
+                                  </CardContent>
+                                </Card>
                               </>
                             )
                           })}
-                          <hr className="mt-2" />
                         </div>
                       </div>
                     </div>

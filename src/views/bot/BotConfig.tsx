@@ -11,6 +11,12 @@ import {
   CardContent,
   CardHeader,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
   FormControl,
   FormControlLabel,
   IconButton,
@@ -30,6 +36,23 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TablePagination from '@mui/material/TablePagination'
+import TableRow from '@mui/material/TableRow'
+import {
+  CDropdown,
+  CDropdownDivider,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+} from '@coreui/react'
+import YouTubeIcon from '@mui/icons-material/YouTube'
+import LinkIcon from '@mui/icons-material/Link'
+import LiveHelpIcon from '@mui/icons-material/LiveHelp'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
@@ -38,7 +61,9 @@ import HdrWeakOutlinedIcon from '@mui/icons-material/HdrWeakOutlined'
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import MoreTimeIcon from '@mui/icons-material/MoreTime'
-import { Label } from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
+import AddIcon from '@mui/icons-material/Add'
+import DoneIcon from '@mui/icons-material/Done'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -213,6 +238,146 @@ const BotConfig = () => {
       [selectedDay]: !prevStatus[selectedDay],
     }))
   }
+
+  //model
+  const [dialog, setDialogOpen] = useState(false)
+  const [youtubeDialog, setYoutubeDialog] = useState(false)
+  const [faqDialog, setFaqDialog] = useState(false)
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true)
+  }
+
+  const handleClose = () => {
+    setDialogOpen(false)
+    setYoutubeDialog(false)
+    setFaqDialog(false)
+  }
+  const handleYoutubeDialogOpen = () => {
+    setYoutubeDialog(true)
+  }
+  const handleFaqDialogOpen = () => {
+    setFaqDialog(true)
+  }
+
+  //faq
+  const [faqs, setFAQs] = useState([
+    {
+      question: '',
+      answer: '',
+    },
+  ])
+
+  const handleAddQuestion = () => {
+    setFAQs([...faqs, { question: '', answer: '' }])
+  }
+
+  const handleRemoveQuestion = (index) => {
+    setFAQs(faqs.filter((_, i) => i !== index))
+  }
+
+  const handleChanges = (event, index, field) => {
+    const updatedFAQs = [...faqs]
+    updatedFAQs[index][field] = event.target.value
+    setFAQs(updatedFAQs)
+  }
+
+  const handleFaqSubmit = () => {
+    // Handle form submission (e.g., send data to server)
+    console.log(faqs)
+  }
+  // bot files
+  interface Column {
+    id: string
+    label: string
+    minWidth?: number
+    align?: 'left'
+    format?: (value: number) => string
+  }
+
+  const columns: readonly Column[] = [
+    { id: 'name', label: 'File Name', minWidth: 170 },
+    {
+      id: 'size',
+      label: 'Size',
+      minWidth: 170,
+      align: 'left',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'noOfDocs',
+      label: 'No of Documents',
+      minWidth: 170,
+      align: 'left',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'createdDt',
+      label: 'Created Date',
+      minWidth: 170,
+      align: 'left',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+  ]
+  function createData(name: string, code: string, population: number, size: number): Data {
+    const density = population / size
+    return { name, code, population, size, density }
+  }
+  const rows = [
+    createData('India', 'IN', 1324171354, 3287263),
+    createData('China', 'CN', 1403500365, 9596961),
+    createData('Italy', 'IT', 60483973, 301340),
+    createData('United States', 'US', 327167434, 9833520),
+    createData('Canada', 'CA', 37602103, 9984670),
+    createData('Australia', 'AU', 25475400, 7692024),
+    createData('Germany', 'DE', 83019200, 357578),
+    createData('Ireland', 'IE', 4857000, 70273),
+    createData('Mexico', 'MX', 126577691, 1972550),
+    createData('Japan', 'JP', 126317000, 377973),
+    createData('France', 'FR', 67022000, 640679),
+    createData('United Kingdom', 'GB', 67545757, 242495),
+    createData('Russia', 'RU', 146793744, 17098246),
+    createData('Nigeria', 'NG', 200962417, 923768),
+    createData('Brazil', 'BR', 210147125, 8515767),
+  ]
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value)
+    setPage(0)
+  }
+  interface Document {
+    size: string
+    id: number
+    name: string
+    description: string
+    assistantId: string
+    threadId: string
+    userId: string
+    documentId: string
+    createdDt: string
+    instruction: string
+  }
+  const [document, setDocument] = useState<Document[]>([
+    {
+      id: 0,
+      name: '',
+      description: '',
+      assistantId: '',
+      threadId: '',
+      userId: '',
+      documentId: '',
+      createdDt: '',
+      instruction: '',
+      size: '',
+    },
+  ])
+
   return (
     <Card>
       {/* {bot?.id} */}
@@ -277,7 +442,323 @@ const BotConfig = () => {
           <form onSubmit={handleSubmit}>
             <Paper>
               <Card>
-                <CardHeader title="Bot Config" />
+                <CardHeader
+                  action={
+                    // <Button
+                    //   component="label"
+                    //   variant="contained"
+                    //   color="info"
+                    //   size="small"
+                    //   onClick={handleClickOpen}
+                    //   startIcon={<AddIcon />}
+                    // >
+                    //   Add
+                    // </Button>
+                    <CDropdown variant="btn-group">
+                      <CDropdownToggle color="info" size="sm" style={{ color: 'white' }}>
+                        <AddIcon />
+                        Add
+                      </CDropdownToggle>
+                      <CDropdownMenu>
+                        <CDropdownItem style={{ marginRight: 12 }} onClick={handleDialogOpen}>
+                          <LinkIcon fontSize="small" color="primary" style={{ marginRight: 10 }} />
+                          Website Url
+                        </CDropdownItem>
+                        <CDropdownItem onClick={handleYoutubeDialogOpen}>
+                          <YouTubeIcon fontSize="small" color="error" style={{ marginRight: 10 }} />
+                          YouTube
+                        </CDropdownItem>
+                        <CDropdownItem onClick={handleFaqDialogOpen}>
+                          <LiveHelpIcon
+                            fontSize="small"
+                            color="primary"
+                            style={{ marginRight: 10 }}
+                          />
+                          FAQ
+                        </CDropdownItem>
+                        <CDropdownDivider />
+                        <CDropdownItem href="#">Separated link</CDropdownItem>
+                      </CDropdownMenu>
+                    </CDropdown>
+                  }
+                  title="Bot Configuration"
+                  subheader=""
+                  titleTypographyProps={{ fontSize: 18 }}
+                />
+
+                <Dialog
+                  maxWidth="lg"
+                  open={dialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1 }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                  >
+                    Import a Website URL
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+
+                  <DialogContent>
+                    <DialogContentText>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: 1,
+                          width: '400px',
+                        }}
+                      >
+                        <TextField
+                          label="Please copy Website URL:"
+                          id="outlined-size-small"
+                          size="small"
+                          fullWidth
+                        />
+                        <Button autoFocus variant="outlined" color="info">
+                          Add
+                        </Button>
+                        <Divider />
+                      </Box>
+                      <Box
+                        sx={{
+                          width: '400px',
+                          mt: 2,
+                        }}
+                      >
+                        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                          {[1].map((value) => (
+                            <ListItem
+                              key={value}
+                              disableGutters
+                              secondaryAction={
+                                <IconButton aria-label="comment">
+                                  <DeleteForeverIcon color="error" fontSize="small" />
+                                </IconButton>
+                              }
+                            >
+                              <Chip
+                                label="https://cloudsocial.io"
+                                // onClick={handleClick}
+                                // onDelete={handleDelete}
+                                deleteIcon={<DeleteForeverIcon />}
+                                variant="filled"
+                                color="success"
+                              />
+                              <Divider variant="inset" component="li" />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog
+                  maxWidth="lg"
+                  open={youtubeDialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1 }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                  >
+                    Import a Youtube Video
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+
+                  <DialogContent>
+                    <DialogContentText>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: 1,
+                          width: '400px',
+                        }}
+                      >
+                        <TextField
+                          label="Please copy the video link below:"
+                          id="outlined-size-small"
+                          size="small"
+                          fullWidth
+                        />
+                        <Button autoFocus variant="outlined" color="info">
+                          Add
+                        </Button>
+                        <Divider />
+                      </Box>
+                      <Box
+                        sx={{
+                          width: '400px',
+                          mt: 2,
+                        }}
+                      >
+                        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                          {[1].map((value) => (
+                            <ListItem
+                              key={value}
+                              disableGutters
+                              secondaryAction={
+                                <IconButton aria-label="comment">
+                                  <DeleteForeverIcon color="error" fontSize="small" />
+                                </IconButton>
+                              }
+                            >
+                              <Chip
+                                label="https://www.youtube.com/watch?v=YraxnPsxZgc"
+                                // onClick={handleClick}
+                                // onDelete={handleDelete}
+                                deleteIcon={<DeleteForeverIcon />}
+                                variant="filled"
+                                color="success"
+                              />
+                              <Divider variant="inset" component="li" />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog
+                  open={faqDialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1 }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                  >
+                    Add FAQ's
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+
+                  <DialogContent>
+                    <DialogContentText>
+                      {faqs.map((faq, index) => (
+                        <Box key={index}>
+                          <TextField
+                            label="Enter the question"
+                            size="small"
+                            fullWidth
+                            variant="outlined"
+                            sx={{ mb: 2 }}
+                            value={faq.question}
+                            onChange={(e) => handleChanges(e, index, 'question')}
+                          />
+                          <TextField
+                            fullWidth
+                            label="Enter the answer"
+                            size="small"
+                            variant="outlined"
+                            multiline
+                            rows={4}
+                            value={faq.answer}
+                            onChange={(e) => handleChanges(e, index, 'answer')}
+                          />
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                              alignItems: 'center',
+                              gap: 1,
+                              mt: 2,
+                            }}
+                          >
+                            <Divider />
+                            <Button
+                              onClick={() => handleRemoveQuestion(index)}
+                              variant="outlined"
+                              color="error"
+                              size="small"
+                              startIcon={<DeleteForeverIcon />}
+                              sx={{ mb: 2, mt: 2, float: 'right' }}
+                            >
+                              Remove
+                            </Button>
+                          </Box>
+                        </Box>
+                      ))}
+                    </DialogContentText>
+                    <DialogActions>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: 3,
+                          mt: 1,
+                        }}
+                      >
+                        <Divider />
+                        <Button
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          onClick={handleAddQuestion}
+                          startIcon={<AddIcon />}
+                        >
+                          Add Question
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          onClick={handleFaqSubmit}
+                          startIcon={<SaveAltOutlinedIcon />}
+                        >
+                          Save FAQ
+                        </Button>
+                      </Box>
+                    </DialogActions>
+                  </DialogContent>
+                </Dialog>
+
                 <CardContent>
                   <Stack direction="row" spacing={2}>
                     <Item>
@@ -538,6 +1019,79 @@ const BotConfig = () => {
           </form>
         )}
       </Formik>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table" size="small">
+            <TableHead style={{ backgroundColor: 'skyblue' }}>
+              <TableRow>
+                {columns.map((column) => (
+                  <>
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  </>
+                ))}
+                <TableCell
+                style={{backgroundColor: 'skyblue' }}
+                >
+                  Action
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {document.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                function deletAssistant(assistantId: string) {
+                  axios
+                    .delete(`${constants.deleteAssistant}/${assistantId}`)
+                    .catch((err) => console.log(err))
+                }
+
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                    {columns.map((column) => {
+                      const value = row[column.id]
+                      return (
+                        <>
+                          <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === 'number'
+                              ? column.format(value)
+                              : value}
+                          </TableCell>
+                        </>
+                      )
+                    })}
+                    <TableCell sx={{ float: 'left' }}>
+                      <Button
+                        onClick={deletAssistant(row.assistantId)}
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        startIcon={<DeleteForeverIcon />}
+                        sx={{ mb: 2, mt: 2, float: 'right' }}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
     </Card>
   )
 }

@@ -32,7 +32,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import HdrStrongOutlinedIcon from '@mui/icons-material/HdrStrongOutlined'
 import HdrWeakOutlinedIcon from '@mui/icons-material/HdrWeakOutlined'
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
-import { useLocation,useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -46,14 +46,13 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 })
 const EditConfig = () => {
-    const navigate=useNavigate()
+  const navigate = useNavigate()
   const location = useLocation()
-  const { row,assistant } = location.state
-  const assistantVal:Bot=assistant[0]
-  const rowVal:Document[]=row
-  console.log("val" ,row);
-  console.log("val" ,assistant);
- 
+  const { row, assistant } = location.state
+  const assistantVal: Bot = assistant[0]
+  const rowVal: Document[] = row
+  console.log('val', row)
+  console.log('val', assistant)
 
   const [status1, setStatus1] = useState<boolean>(false)
   const bot: Bot = {
@@ -134,17 +133,16 @@ const EditConfig = () => {
   }
   return (
     <Card>
-      
       {/* {bot?.id} */}
       {/* <h1>{props.assistant}</h1> */}
       {/* <Button onClick={()=>props.updateVal}>update</Button> */}
       <Formik
         initialValues={{
           name: assistantVal != null ? assistantVal.name : '',
-          description: assistantVal != null ? assistantVal.description:'',
-          model: assistantVal != null ? assistantVal.model:'',
-          promptName:'',
-          instructions: assistantVal != null ? assistantVal.instruction:'',
+          description: assistantVal != null ? assistantVal.description : '',
+          model: assistantVal != null ? assistantVal.model : '',
+          promptName: '',
+          instructions: assistantVal != null ? assistantVal.instruction : '',
         }}
         //   validate={values => {
         //     const errors = {};
@@ -158,7 +156,6 @@ const EditConfig = () => {
         //     return errors;
         //   }}
         onSubmit={(values, { setSubmitting }) => {
-        
           setSubmitting(false)
           // setTimeout(() => {
           //     alert(JSON.stringify(values, null, 2));
@@ -178,31 +175,36 @@ const EditConfig = () => {
           }
           console.log('🚀 ~ data:', data)
           axios
-            .post<Assistant>(`${constants.modifyAssistant}/${localStorage.getItem('userId')}/id/${assistantVal.assistantId}`, { ...data })
+            .post<Assistant>(
+              `${constants.modifyAssistant}/${localStorage.getItem('userId')}/id/${assistantVal.assistantId}`,
+              { ...data },
+            )
             .then((res) => {
               let threadData = {
                 assistantId: res.data.id,
                 userId: localStorage.getItem('userId'),
               }
-              if(files!=null){
-              axios.post(`${constants.createThread}`, threadData).then((res) => {
-                handleUpload(String(threadData.assistantId)).then((res) => {
-                  completeSetup(String(threadData.assistantId))
+              if (files != null) {
+                axios.post(`${constants.createThread}`, threadData).then((res) => {
+                  handleUpload(String(threadData.assistantId)).then((res) => {
+                    completeSetup(String(threadData.assistantId))
+                  })
                 })
-              })
-            }
+              }
               console.log(res)
-            }).then(res=>{alert("assistant updated successfully")
-                navigate("/editBot",{ state: { botVal: assistantVal.assistantId } })
+            })
+            .then((res) => {
+              alert('assistant updated successfully')
+              navigate('/editBot', { state: { botVal: assistantVal.assistantId } })
             })
             .catch((err) => console.log(err))
         }}
       >
-        {({ values, isSubmitting, handleChange, handleBlur, handleSubmit,dirty }) => (
+        {({ values, isSubmitting, handleChange, handleBlur, handleSubmit, dirty }) => (
           <form onSubmit={handleSubmit}>
             <Paper sx={{ width: '55ch' }}>
               <Card>
-                <CardHeader title="Edit Bot Config" />
+                <CardHeader title="Edit Bot Configuration" />
                 <CardContent>
                   <TextField
                     label="Name"
@@ -366,39 +368,34 @@ const EditConfig = () => {
                       variant="contained"
                       type="submit"
                       color="info"
-                      disabled={isSubmitting || !dirty }
+                      disabled={isSubmitting || !dirty}
                       startIcon={<SaveAltOutlinedIcon />}
                     >
                       Save
                     </Button>
                   </CardActions>
                 </CardContent>
+                <Box>
+                  {rowVal &&
+                    [...rowVal].map((file, index) => (
+                      <Box key={file.docName}>
+                        <List>
+                          <ListItem className="flex-row gap-2">
+                            <Chip variant="outlined" color="info" size="small" label={index + 1} />
+                            <ListItemText primary={file.docName} secondary={file.uploadedDt} />
+                            <ListItemButton sx={{ fontSize: '14px' }} disabled>
+                              Size: {file.docSize} bytes
+                            </ListItemButton>
+                          </ListItem>
+                        </List>
+                      </Box>
+                    ))}
+                </Box>
               </Card>
             </Paper>
           </form>
         )}
       </Formik>
-      <div>
-        <table>
-            <tr>
-
-        <th>a</th>
-        <th>2</th>
-        <th>3</th>
-            </tr>
-
-        {rowVal.map(res=>{
-            return(
-                
-                <tr>
-                <td>{res.docName}</td>
-                <td>{res.docSize}</td>
-                <td>{res.uploadedDt}</td>
-        </tr>
-            )
-        })}
-        </table>
-      </div>
     </Card>
   )
 }

@@ -76,6 +76,8 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -243,13 +245,15 @@ const BotList = () => {
                       {column.label}
                     </TableCell>
                   ))}
+                  <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                   function deletAssistant(assistantId: string) {
-                    axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
-                   
+                    axios
+                      .delete(`${constants.deleteAssistant}/${assistantId}`)
+                      .catch((err) => console.log(err))
                   }
 
                   return (
@@ -258,15 +262,26 @@ const BotList = () => {
                         const value = row[column.id]
                         return (
                           <>
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number'
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
+                            <TableCell key={column.id} align={column.align}>
+                              {column.format && typeof value === 'number'
+                                ? column.format(value)
+                                : value}
+                            </TableCell>
                           </>
                         )
                       })}
-                      <TableCell><Button onClick={deletAssistant(row.assistantId)}>Delete</Button></TableCell>
+                      <TableCell sx={{float:"left"}}>
+                        <Button
+                          onClick={deletAssistant(row.assistantId)}
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          startIcon={<DeleteForeverIcon />}
+                          sx={{ mb: 2, mt: 2, float: 'right' }}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   )
                 })}
@@ -284,7 +299,7 @@ const BotList = () => {
           />
         </Paper>
       ) : (
-        <div>No assistant avalaible</div>
+        <div>No assistant available</div>
       )}
 
       <BootstrapDialog
@@ -293,17 +308,16 @@ const BotList = () => {
         open={open}
         fullWidth
       >
-        <DialogTitle sx={{ m: 0, p: 1, fontSize: 18 }} id="customized-dialog-title">
+        <DialogTitle sx={{ m: 0, p: 1, borderBottom: 1 }} id="customized-dialog-title">
           Create Bot
         </DialogTitle>
         <IconButton
           aria-label="close"
-          size="small"
           onClick={handleClose}
           sx={(theme) => ({
             position: 'absolute',
-            left: 8,
-            top: 1,
+            right: 8,
+            top: 8,
             color: theme.palette.grey[500],
           })}
         >

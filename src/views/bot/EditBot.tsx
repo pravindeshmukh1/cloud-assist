@@ -5,6 +5,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import TablePagination from '@mui/material/TablePagination'
 import Paper from '@mui/material/Paper'
 import {
   Box,
@@ -35,8 +36,8 @@ const rows = [createData('watch?v=lFqxenB9CX8', '33.9MB', '22 Apr 2022, 1:43 PM'
 const EditBot = () => {
   const location = useLocation()
   const state = location.state
-  const [assistant, setassistant] = useState<Bot[]>()
-  const [documents, setdocuments] = useState<Document[]>()
+  const [assistant, setAssistant] = useState<Bot[]>()
+  const [documents, setDocuments] = useState<Document[]>()
   const [bot, setBot] = React.useState("")
   if(state!=null){
     // setBot(state.botVal)
@@ -44,7 +45,7 @@ const EditBot = () => {
   React.useEffect(() => {
   
     axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res=>{
-      setassistant(res.data);
+      setAssistant(res.data);
       if(state!=null){
       setBot(state.botVal)
       }else{
@@ -55,13 +56,28 @@ const EditBot = () => {
   React.useEffect(() => {
     if(bot!=null){
     axios.post<Document[]>(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${bot}`).then(res=>{
-      setdocuments(res.data);
+      setDocuments(res.data);
     })}
   }, [bot])
   const handleChange = (event: SelectChangeEvent) => {
     alert(event.target.value as string)
     setBot(event.target.value as string)
   }
+
+  // pagination
+
+  const [page, setPage] = React.useState(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState(10)
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value)
+    setPage(0)
+  }
+
   return (
     <Box>
       <Card>
@@ -77,11 +93,13 @@ const EditBot = () => {
                 size="small"
                 onChange={handleChange}
               >
-              {assistant?.map((res:Bot)=>{
-                return(               
-                  <MenuItem key={res.assistantId} value={res.assistantId}>{res.name}</MenuItem> 
-                )
-              })}
+                {assistant?.map((res: Bot) => {
+                  return (
+                    <MenuItem key={res.assistantId} value={res.assistantId}>
+                      {res.name}
+                    </MenuItem>
+                  )
+                })}
               </Select>
             </FormControl>
           }
@@ -92,7 +110,7 @@ const EditBot = () => {
         />
 
         <CardContent>
-          {documents?.length}
+          Document Count : {documents?.length}
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
               <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -105,43 +123,101 @@ const EditBot = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {documents?.map((row) => (
-                  <TableRow
-                    key={row.documentId}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {row.docName}
-                    </TableCell>
-                    <TableCell align="left">{row.docSize}</TableCell>
-                    <TableCell align="left">{row.uploadedDt}</TableCell>
-                    <TableCell align="left">{row.status}</TableCell>
-                    <TableCell align="left">
-                      <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
-                        <Link to="/editBotConfig" state={{row:documents,assistant:assistant?.filter(res=>res.assistantId==bot)}}>
+                {documents
+                  ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <TableRow
+                      key={row.documentId}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {row.docName}
+                      </TableCell>
+                      <TableCell align="left">{row.docSize}</TableCell>
+                      <TableCell align="left">{row.uploadedDt}</TableCell>
+                      <TableCell align="left">{row.status}</TableCell>
+                      <TableCell align="left">
+                        <ButtonGroup
+                          variant="outlined"
+                          aria-label="Basic button group"
+                          size="small"
+                        >
+                          <Link
+                            to="/editBotConfig"
+                            state={{
+                              row: documents,
+                              assistant: assistant?.filter((res) => res.assistantId == bot),
+                            }}
+                          >
+                            <Button
+                              component="label"
+                              variant="outlined"
+                              startIcon={<Edit color="info" />}
+                            >
+                              Edit
+                            </Button>
+                          </Link>
                           <Button
                             component="label"
                             variant="outlined"
-                            startIcon={<Edit color="info" />}
+                            color="error"
+                            startIcon={<Delete color="error" />}
                           >
-                            Edit
+                            Delete
                           </Button>
-                        </Link>
+                        </ButtonGroup>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                {/* <TableRow
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    row
+                  </TableCell>
+                  <TableCell align="left">docSize</TableCell>
+                  <TableCell align="left">uploadedDt</TableCell>
+                  <TableCell align="left">status</TableCell>
+                  <TableCell align="left">
+                    <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
+                      <Link
+                        to="/editBotConfig"
+                        state={{
+                          row: documents,
+                          assistant: assistant?.filter((res) => res.assistantId == bot),
+                        }}
+                      >
                         <Button
                           component="label"
                           variant="outlined"
-                          color="error"
-                          startIcon={<Delete color="error" />}
+                          startIcon={<Edit color="info" />}
                         >
-                          Delete
+                          Edit
                         </Button>
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </Link>
+                      <Button
+                        component="label"
+                        variant="outlined"
+                        color="error"
+                        startIcon={<Delete color="error" />}
+                      >
+                        Delete
+                      </Button>
+                    </ButtonGroup>
+                  </TableCell>
+                </TableRow> */}
               </TableBody>
             </Table>
           </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </CardContent>
       </Card>
     </Box>
