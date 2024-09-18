@@ -42,7 +42,30 @@ const AppHeader = () => {
         headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
     })
   }, [])
+  // const addSBL = () => {
+  //   const scriptId = 'fsc-api'
+  //   const existingScript = document.getElementById(scriptId)
+  //   if (!existingScript) {
+  //     const storeFrontToUse = 'cloudpoint.onfastspring.com/popup-CloudAssist'
+  //     const script = document.createElement('script')
 
+  //     script.type = 'text/javascript'
+  //     script.id = scriptId
+  //     script.src = 'https://sbl.onfastspring.com/sbl/1.0.1/fastspring-builder.min.js'
+  //     script.dataset.storefront = storeFrontToUse
+  //     // Make sure to add callback function to window so that the DOM is aware of it
+  //     window.fastSpringCallBack = fastSpringCallBack
+  //     script.setAttribute('data-data-callback', 'fastSpringCallBack')
+
+  //     document.body.appendChild(script)
+  //   }
+  // }
+  // addSBL()
+  // const buyProduct = () => {
+  //   window.fastspring.builder.push({
+  //     checkout: true,
+  //   })
+  // }
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
       <CContainer className="border-bottom px-4" fluid>
@@ -83,9 +106,18 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav> */}
         <CHeaderNav>
-          <Button variant="contained" color="info" size="small">
+          <Button
+            variant="contained"
+            color="info"
+            size="small"
+            data-fsc-item-path-value="cloudassist"
+            data-fsc-action="Add, Checkout"
+          >
             Subscribe
           </Button>
+          {/* <button data-fsc-item-path-value="phot-io-main-app" data-fsc-action="Add, Checkout">
+            Add to cart
+          </button> */}
 
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>

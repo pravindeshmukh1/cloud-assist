@@ -93,8 +93,8 @@ const Dashboard = () => {
 
   return (
     <>
-      {!(bot.length == 0) ? (
-        <div>{'No bots avalaible Please create one'}</div>
+      {!(bot.length > 0) ? (
+        <div>{'No bots available Please create one'}</div>
       ) : (
         <div>
           {/* <h4>Bot available</h4>
