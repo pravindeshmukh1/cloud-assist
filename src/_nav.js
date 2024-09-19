@@ -20,9 +20,9 @@ import {
   cilUser,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
-
-const _nav = [
-  {
+let _nav=[]
+if(localStorage.getItem('role')==='Admin'){
+  _nav = [ {
     component: CNavItem,
     name: 'Dashboard',
     to: '/dashboard',
@@ -390,5 +390,16 @@ const _nav = [
   //   icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
   // },
 ]
-
+}else{
+  _nav = [ {
+    component: CNavItem,
+    name: 'Dashboard',
+    to: '/dashboard',
+    icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      // text: 'NEW',
+    },
+  }]
+}
 export default _nav

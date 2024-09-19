@@ -4,15 +4,18 @@ import CIcon from '@coreui/icons-react'
 import { cilHome, cilSearch } from '@coreui/icons'
 import { Field, Form, Formik } from 'formik'
 import axios from 'axios'
-import { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import constants from '../../constants'
 import { Bot, Message, MsgResponse } from '../../interface'
 import Markdown from 'react-markdown'
 import {
+  Backdrop,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   FormControl,
   IconButton,
   Input,
@@ -54,7 +57,13 @@ const Dashboard = () => {
   const handleChange = (event) => {
     setText(event.target.value)
   }
-
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
   useEffect(() => {
     axios
       .get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`)
@@ -77,11 +86,8 @@ const Dashboard = () => {
   ])
 
   function botSelected(e: ChangeEvent<HTMLSelectElement>): void {
-    console.log(e.target.value)
-    alert(e.target.value)
     const arr = bot?.filter((bots) => bots.assistantId === e.target.value)
     setactiveBot(arr != undefined ? arr[0] : null)
-    console.log(arr != undefined && arr[0])
     setMessages([
       {
         message: 'Hi there How can I help you',
@@ -342,6 +348,14 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+        <Button onClick={handleOpen}>Show backdrop</Button>
+<Backdrop
+  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+  open={open}
+  onClick={handleClose}
+>
+  <CircularProgress color="inherit" />
+</Backdrop>
       </div>}
     </>
   )

@@ -149,8 +149,8 @@ const BotConfig = () => {
     navigate("/botList",{state:{assistant}})
   }
   const handleUpload = async (assistantId: string) => {
-    if(files!=null){
-    if (files?.length>1) {
+    // if(files!=null){
+    if (files) {
       setStatus('uploading')
 
       const formData = new FormData();
@@ -174,7 +174,7 @@ const BotConfig = () => {
         setStatus('fail')
       }
     }
-  }
+  // }
     if(websiteUrl.length>0){
       let data={
         "userId":localStorage.getItem("userId"),
@@ -199,7 +199,6 @@ const BotConfig = () => {
   }
   function updatedName(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
     let val =event.target.value
-   
     seturl(val)
     // setwebsiteUrl([...websiteUrl,val])
   }
@@ -213,6 +212,7 @@ const t = url;
 
 if (t.match(regex)) {
   // alert("Successful match");
+  seturl('')
   setwebsiteUrl([...websiteUrl,url])
 } else {
   alert("must be a url");
@@ -336,6 +336,7 @@ if (t.match(regex)) {
 
   const handleFaqSubmit = () => {
     // Handle form submission (e.g., send data to server)
+    
     console.log(faqs)
   }
   // bot files
@@ -650,8 +651,10 @@ if (t.match(regex)) {
                           id="outlined-size-small"
                           size="small"
                           fullWidth
+                          value={url}
+                          onChange={updatedName}
                         />
-                        <Button autoFocus variant="outlined" color="info">
+                        <Button autoFocus variant="outlined" color="info" onClick={addVal}>
                           Add
                         </Button>
                         <Divider />
@@ -663,9 +666,9 @@ if (t.match(regex)) {
                         }}
                       >
                         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                          {[1].map((value) => (
+                          {websiteUrl.map((value,index) => (
                             <ListItem
-                              key={value}
+                              key={index}
                               disableGutters
                               secondaryAction={
                                 <IconButton aria-label="comment">
@@ -674,7 +677,7 @@ if (t.match(regex)) {
                               }
                             >
                               <Chip
-                                label="https://cloudsocial.io"
+                                label={value}
                                 // onClick={handleClick}
                                 // onDelete={handleDelete}
                                 deleteIcon={<DeleteForeverIcon />}
@@ -938,6 +941,7 @@ if (t.match(regex)) {
                           </MenuItem>
                           <MenuItem value="gpt-4o">GPT-4o</MenuItem>
                           <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
+                          <MenuItem value="gpt-4o-mini">GPT-4o Mini</MenuItem>
                           <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
                         </Select>
                       </FormControl>
