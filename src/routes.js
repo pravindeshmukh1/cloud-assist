@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const Home = React.lazy(() => import('./views/home/Home'))
 const History = React.lazy(() => import('./views/history/History'))
 const Analytics = React.lazy(() => import('./views/analytics/Analytics'))
 const AddUser = React.lazy(() => import('./views/user/AddUser'))
@@ -12,7 +12,7 @@ const EditConfig = React.lazy(() => import('./views/bot/EditConfig'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/home', name: 'Home', element: Home },
   { path: '/history', name: 'History', element: History },
   { path: '/analytics', name: 'Dashboard', element: Analytics },
   { path: '/addUser', name: 'AddUser', element: AddUser },
@@ -20,7 +20,7 @@ const routes = [
   { path: '/botList', name: 'BotList', element: BotList },
   { path: '/editBot', name: 'EditBot', element: EditBot },
   { path: '/botConfig', name: 'BotConfig', element: BotConfig },
-  { path: '/editBotConfig', name: 'EditConfig', element:EditConfig},
+  { path: '/editBotConfig', name: 'EditConfig', element: EditConfig},
 
 ]
 
