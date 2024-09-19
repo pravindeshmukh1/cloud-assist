@@ -24,7 +24,7 @@ import { Link, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import constants from '../../constants'
 import { useState } from 'react'
-import { Assistant, Bot,Document } from '../../interface'
+import { Assistant, Bot, Document } from '../../interface'
 
 
 function createData(fileName: string, size: string, uploadDate: string, tags: string) {
@@ -36,30 +36,34 @@ const EditBot = () => {
   const location = useLocation()
   const state = location.state
   const [assistant, setassistant] = useState<Bot[]>()
+  const [selectedAssistant, setselectedAssistant] = useState<Bot>()
   const [documents, setdocuments] = useState<Document[]>()
   const [bot, setBot] = React.useState("")
-  if(state!=null){
+  if (state != null) {
     // setBot(state.botVal)
   }
   React.useEffect(() => {
-  
-    axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res=>{
+
+    axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res => {
       setassistant(res.data);
-      if(state!=null){
-      setBot(state.botVal)
-      }else{
+      if (state != null) {
+        setBot(state.botVal)
+      } else {
         setBot(res.data[0].assistantId)
+        setselectedAssistant(assistant?.filter(res => res.assistantId == bot)[0])
       }
     })
   }, [])
   React.useEffect(() => {
-    if(bot!=null){
-    axios.post<Document[]>(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${bot}`).then(res=>{
-      setdocuments(res.data);
-    })}
+    if (bot != null) {
+      axios.post<Document[]>(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${bot}`).then(res => {
+        setdocuments(res.data);
+      })
+    }
   }, [bot])
   const handleChange = (event: SelectChangeEvent) => {
     alert(event.target.value as string)
+    setselectedAssistant(assistant?.filter(res => res.assistantId == event.target.value)[0])
     setBot(event.target.value as string)
   }
   return (
@@ -77,11 +81,11 @@ const EditBot = () => {
                 size="small"
                 onChange={handleChange}
               >
-              {assistant?.map((res:Bot)=>{
-                return(               
-                  <MenuItem key={res.assistantId} value={res.assistantId}>{res.name}</MenuItem> 
-                )
-              })}
+                {assistant?.map((res: Bot) => {
+                  return (
+                    <MenuItem key={res.assistantId} value={res.assistantId}>{res.name}</MenuItem>
+                  )
+                })}
               </Select>
             </FormControl>
           }
@@ -92,7 +96,20 @@ const EditBot = () => {
         />
 
         <CardContent>
-          {documents?.length}
+          <div>
+            <div>
+              {selectedAssistant?.name}
+            </div>
+            <div>
+              {selectedAssistant?.description}
+            </div>
+            <div>
+              {selectedAssistant?.instruction}
+            </div>
+
+
+
+          </div>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
               <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -118,7 +135,7 @@ const EditBot = () => {
                     <TableCell align="left">{row.status}</TableCell>
                     <TableCell align="left">
                       <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
-                        <Link to="/editBotConfig" state={{row:documents,assistant:assistant?.filter(res=>res.assistantId==bot)}}>
+                        <Link to="/editBotConfig" state={{ row: documents, assistant: assistant?.filter(res => res.assistantId == bot) }}>
                           <Button
                             component="label"
                             variant="outlined"

@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import constants from '../../constants'
 import { Assistant, Bot } from '../../interface'
 import { useState } from 'react'
+import { prompts } from "../../prompts";
 import {
   Box,
   Button,
@@ -32,6 +33,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import HdrStrongOutlinedIcon from '@mui/icons-material/HdrStrongOutlined'
 import HdrWeakOutlinedIcon from '@mui/icons-material/HdrWeakOutlined'
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -45,6 +47,13 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 })
 const BotConfig = () => {
+  const navigate=useNavigate()
+  const location = useLocation()
+  const { name, model1 } = location.state
+  console.log(name);
+  console.log(model1);
+  
+  
   const [status1, setStatus1] = useState<boolean>(false)
   const bot: Bot = {
     assistantId: '',
@@ -72,6 +81,8 @@ const BotConfig = () => {
     }
   }
   function completeSetup(assistant: string): void {
+    if(files!=null){
+    if(files?.length>0){
     let data = {
       asstId: assistant,
       path: '',
@@ -89,13 +100,16 @@ const BotConfig = () => {
       .catch((err) => {
         console.log(err)
       })
+    }}
+    navigate("/botList",{state:{assistant}})
   }
   const handleUpload = async (assistantId: string) => {
-    if (files) {
+    if(files!=null){
+    if (files?.length>1) {
       setStatus('uploading')
 
-      const formData = new FormData()
-      ;[...files].forEach((file) => {
+      const formData = new FormData();
+      [...files].forEach((file) => {
         formData.append('files', file)
       })
       formData.append('body', assistantId)
@@ -116,12 +130,50 @@ const BotConfig = () => {
       }
     }
   }
+    if(websiteUrl.length>0){
+      let data={
+        "userId":localStorage.getItem("userId"),
+        assistantId,
+        url:websiteUrl
+      }
+      axios
+            .post<Assistant>(`${constants.uploadWebsite}`, { ...data })
+            .then((res) => {}).catch(err=>console.log(err)
+            )
+    }
+  }
 
-  const [model, setModel] = useState('')
+  const [model, setModel] = useState(model1)
+  const [instruction, setinstruction] = useState("")
+  const [url, seturl] = useState("")
+
+  const [websiteUrl, setwebsiteUrl] = useState<Array<String>>([])
 
   const handleModelChange = (event: SelectChangeEvent) => {
     setModel(event.target.value)
   }
+  function updatedName(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+    let val =event.target.value
+   
+    seturl(val)
+    // setwebsiteUrl([...websiteUrl,val])
+  }
+
+
+  
+  function addVal(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    const expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+const regex = new RegExp(expression);
+const t = url;
+
+if (t.match(regex)) {
+  // alert("Successful match");
+  setwebsiteUrl([...websiteUrl,url])
+} else {
+  alert("must be a url");
+}
+  }
+
   return (
     <Card>
       {/* {bot?.id} */}
@@ -129,11 +181,11 @@ const BotConfig = () => {
       {/* <Button onClick={()=>props.updateVal}>update</Button> */}
       <Formik
         initialValues={{
-          name: bot != null ? bot.name : '',
+          name: name != null ? name : '',
           description: '',
-          model: '',
+          model: model1!=null?model1:'',
           promptName: '',
-          instructions: '',
+          instructions: instruction,
         }}
         //   validate={values => {
         //     const errors = {};
@@ -247,7 +299,7 @@ const BotConfig = () => {
                     </Select>
                   </FormControl>
 
-                  <TextField
+                  {/* <TextField
                     label="Prompt Name"
                     name="promptName"
                     value={values.promptName}
@@ -266,7 +318,7 @@ const BotConfig = () => {
                         ),
                       },
                     }}
-                  />
+                  /> */}
                   <TextField
                     multiline
                     label="Prompt Instructions"
@@ -342,6 +394,18 @@ const BotConfig = () => {
                         </Box>
                       ))}
                   </Box>
+                  <div>
+                    Website url
+                    
+                    <TextField type='text' name='web url'  onChange={updatedName}/>
+                    <Button onClick={addVal}>Add</Button>
+                  </div>
+
+                  <div>
+                      {websiteUrl.map(res=>{return(
+                        <div>{res}</div>
+                      ) })}
+                  </div>
                   <CardActions sx={{ float: 'left' }}>
                     {/* <Button type="submit" variant="outlined" disabled={isSubmitting}>
                     Save

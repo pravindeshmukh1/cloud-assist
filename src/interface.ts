@@ -39,6 +39,11 @@ export interface Bot {
     model:string
 
 }
+export interface Values {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
 export interface Assistant {
   id: number,
   name: string,

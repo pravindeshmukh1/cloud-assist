@@ -76,6 +76,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import { Link, useLocation } from 'react-router-dom'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -151,6 +152,7 @@ const rows = [
   createData('Brazil', 'BR', 210147125, 8515767),
 ]
 const BotList = () => {
+  // const {assistant} = useLocation().state
   interface Bot {
     size: string
     noOfDocs: string
@@ -217,10 +219,15 @@ const BotList = () => {
   }
 
   const [model, setModel] = React.useState('')
+  const [name, setname] = React.useState('')
 
   const handleChange = (event: SelectChangeEvent) => {
     setModel(event.target.value)
   }
+  function updatedName(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+    setname(event.target.value)
+  }
+
   return (
     <>
       <Box sx={{ float: 'left', marginBottom: 2 }}>
@@ -248,7 +255,7 @@ const BotList = () => {
               <TableBody>
                 {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                   function deletAssistant(assistantId: string) {
-                    axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
+                    // axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
                    
                   }
 
@@ -266,7 +273,9 @@ const BotList = () => {
                           </>
                         )
                       })}
-                      <TableCell><Button onClick={deletAssistant(row.assistantId)}>Delete</Button></TableCell>
+                      {/* <TableCell>
+                        <Button>Delete</Button>
+                        </TableCell> */}
                     </TableRow>
                   )
                 })}
@@ -314,6 +323,7 @@ const BotList = () => {
             fullWidth
             label="Bot name *"
             size="small"
+            onChange={updatedName}
             slotProps={{
               input: {
                 startAdornment: (
@@ -345,9 +355,11 @@ const BotList = () => {
           </FormControl>
         </DialogContent>
         <DialogActions>
+          <Link to="/botConfig"state={{name:name,model1:model}}>
           <Button variant="outlined" color="inherit">
             Create
           </Button>
+          </Link>
         </DialogActions>
       </BootstrapDialog>
     </>

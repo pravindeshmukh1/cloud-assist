@@ -1,4 +1,4 @@
-const baseurl = 'http://localhost:8080'
+const baseurl = 'https://cloudhsm.cloudpoint.co.in'
 const constants = {
   link: `${baseurl}/assistant/create`,
   modifyAssistant: `${baseurl}/assistant/modify`,
@@ -12,7 +12,8 @@ const constants = {
   deleteAssistant: `${baseurl}/assistant`,
   getHistory: `${baseurl}/history`,
   createThread:`${baseurl}/thread/create`,
-  getDocuments:`${baseurl}/document/list`
+  getDocuments:`${baseurl}/document/list`,
+  uploadWebsite:`${baseurl}/assistant/upload/website`
 }
 // asst_UWIlkTxmN1HnKyFY9j5RavlS
 Object.freeze(constants)
