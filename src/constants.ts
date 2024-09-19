@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 const baseurl = 'https://cloudhsm.cloudpoint.co.in'
-=======
-const baseurl = 'http://localhost:8080'
-//const baseurl = 'https://cloudhsm.cloudpoint.co.in/'
->>>>>>> d5321facaeaf4d0b28cc193a392361c802fc7d06
 const constants = {
   link: `${baseurl}/assistant/create`,
   modifyAssistant: `${baseurl}/assistant/modify`,
