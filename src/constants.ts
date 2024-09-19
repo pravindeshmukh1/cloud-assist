@@ -1,5 +1,5 @@
-const baseurl = 'http://localhost:8080'
-//const baseurl = 'https://cloudhsm.cloudpoint.co.in/'
+//const baseurl = 'http://localhost:8080'
+const baseurl = 'https://cloudhsm.cloudpoint.co.in/'
 const constants = {
   link: `${baseurl}/assistant/create`,
   modifyAssistant: `${baseurl}/assistant/modify`,

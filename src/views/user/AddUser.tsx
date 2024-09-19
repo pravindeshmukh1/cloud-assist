@@ -80,20 +80,29 @@ const rows = [
 ]
 const AddUser = () => {
   const [open, setOpen] = React.useState(false)
+  const [openEdit, setOpenEdit] = React.useState(false)
   const theme = useTheme()
 
   const handleClickOpen = () => {
     setOpen(true)
   }
+    const handleClickOpenEditBot = () => {
+      setOpenEdit(true)
+    }
 
   const handleClose = () => {
-    setOpen(false)
+    setOpen(false);
+    setOpenEdit(false)
   }
 
   const [role, setRole] = React.useState('')
+  const [bot, setBot] = React.useState('')
 
   const handleRoleChange = (event: SelectChangeEvent) => {
     setRole(event.target.value as string)
+  }
+  const handleBotChange = (event: SelectChangeEvent) => {
+    setBot(event.target.value as string)
   }
   const [botName, setbotName] = React.useState<string[]>([])
 
@@ -134,45 +143,41 @@ const AddUser = () => {
           onClose={handleClose}
           aria-labelledby="responsive-dialog-title"
         >
-          <DialogTitle sx={{ m: 0, p: 1, borderBottom: 1 }} id="customized-dialog-title">
+          <DialogTitle
+            sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'blue' }}
+            id="customized-dialog-title"
+            fontSize={18}
+            style={{ backgroundColor: 'skyblue' }}
+          >
             Add User
           </DialogTitle>
           <IconButton
             aria-label="close"
+            size="small"
             onClick={handleClose}
             sx={(theme) => ({
               position: 'absolute',
-              right: 8,
-              top: 8,
+              right: 4,
+              top: 4,
               color: theme.palette.grey[500],
             })}
           >
-            <CloseIcon />
+            <CloseIcon fontSize="small" />
           </IconButton>
 
           <DialogContent>
             <DialogContentText>
-              <Box component="form" sx={{ '& .MuiTextField-root': { m: 2, width: '400px' } }}>
+              <Box component="form" sx={{ '& .MuiTextField-root': { m: 2 } }}>
                 <div>
                   <TextField label="Name" id="outlined-size-small" defaultValue="" size="small" />
                   <TextField label="Email" id="outlined-size-small" defaultValue="" size="small" />
                 </div>
                 <div>
-                  <TextField
-                    label="Phone Number"
-                    id="outlined-size-small"
-                    defaultValue=""
-                    size="small"
-                  />
-                  <TextField
-                    label="Size"
-                    id="outlined-size-small"
-                    defaultValue="Small"
-                    size="small"
-                  />
+                  <TextField label="Phone Number" id="outlined-size-small" size="small" />
+                  <TextField label="Password" id="outlined-size-small" size="small" />
                 </div>
                 <div>
-                  <FormControl sx={{ m: 2, width: 400 }} size="small">
+                  <FormControl sx={{ m: 2, minWidth: 257 }} size="small">
                     <InputLabel id="demo-simple-select-label">Role</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -185,29 +190,105 @@ const AddUser = () => {
                       <MenuItem value={'user'}>User</MenuItem>
                     </Select>
                   </FormControl>
-                  <FormControl sx={{ m: 2, width: 400 }} size="small">
-                    <InputLabel id="">Bot</InputLabel>
+                  <FormControl sx={{ m: 2, minWidth: 257 }} size="small">
+                    <InputLabel id="demo-simple-select-label">Bot</InputLabel>
                     <Select
-                      labelId=""
-                      id=""
-                      multiple
-                      value={botName}
-                      onChange={handleChange}
-                      input={<OutlinedInput id="select-multiple-chip" label="Bot" />}
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {selected.map((value) => (
-                            <Chip key={value} label={value} />
-                          ))}
-                        </Box>
-                      )}
-                      MenuProps={MenuProps}
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={bot}
+                      label="Role"
+                      onChange={handleBotChange}
                     >
-                      {names.map((name) => (
-                        <MenuItem key={name} value={name} style={getStyles(name, botName)}>
-                          {name}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value={'bot1'}>Bot 1</MenuItem>
+                      <MenuItem value={'bot2'}>Bot 2</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+              </Box>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus variant="outlined" color="info" onClick={handleClose}>
+              Close
+            </Button>
+            <Button variant="outlined" color="primary" onClick={handleClose} autoFocus>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          maxWidth="lg"
+          open={openEdit}
+          onClose={handleClose}
+          aria-labelledby="responsive-dialog-title"
+        >
+          <DialogTitle
+            sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'blue' }}
+            id="customized-dialog-title"
+            fontSize={18}
+            style={{ backgroundColor: 'skyblue' }}
+          >
+            Edit User
+          </DialogTitle>
+          <IconButton
+            aria-label="close"
+            size="small"
+            onClick={handleClose}
+            sx={(theme) => ({
+              position: 'absolute',
+              right: 4,
+              top: 4,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+
+          <DialogContent>
+            <DialogContentText>
+              <Box component="form" sx={{ '& .MuiTextField-root': { m: 2 } }}>
+                <div>
+                  <TextField label="Name" id="outlined-size-small" defaultValue="" size="small" />
+                  <TextField label="Email" id="outlined-size-small" defaultValue="" size="small" />
+                </div>
+                <div>
+                  <TextField
+                    label="Phone Number"
+                    id="outlined-size-small"
+                    size="small"
+                  />
+                  <TextField
+                    label="Password"
+                    id="outlined-size-small"
+                    size="small"
+                  />
+                </div>
+                <div>
+                  <FormControl sx={{ m: 2, minWidth: 257 }} size="small">
+                    <InputLabel id="demo-simple-select-label">Role</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={role}
+                      label="Role"
+                      onChange={handleRoleChange}
+                    >
+                      <MenuItem value={'admin'}>Admin</MenuItem>
+                      <MenuItem value={'user'}>User</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl sx={{ m: 2, minWidth: 257 }} size="small">
+                    <InputLabel id="demo-simple-select-label">Bot</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={bot}
+                      label="Role"
+                      onChange={handleBotChange}
+                    >
+                      <MenuItem value={'bot1'}>Bot 1</MenuItem>
+                      <MenuItem value={'bot2'}>Bot 2</MenuItem>
                     </Select>
                   </FormControl>
                 </div>
@@ -259,6 +340,7 @@ const AddUser = () => {
                           component="label"
                           variant="outlined"
                           startIcon={<Edit color="info" />}
+                          onClick={handleClickOpenEditBot}
                         >
                           Edit
                         </Button>
