@@ -4,16 +4,19 @@ import CIcon from '@coreui/icons-react'
 import { cilHome, cilSearch, cilUser } from '@coreui/icons'
 import { Field, Form, Formik } from 'formik'
 import axios from 'axios'
-import { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import constants from '../../constants'
 import { Bot, Message, MsgResponse } from '../../interface'
 import Markdown from 'react-markdown'
 import {
   Avatar,
+  Backdrop,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   FormControl,
   IconButton,
   Input,
@@ -28,15 +31,14 @@ import {
 } from '@mui/material'
 import { cibDependabot } from '@coreui/icons'
 import SendIcon from '@mui/icons-material/Send'
-import MicIcon from '@mui/icons-material/Mic'
-import SearchIcon from '@mui/icons-material/Search'
 import { GridDeleteIcon } from '@mui/x-data-grid'
 import { useParams, useSearchParams } from 'react-router-dom'
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt'
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt'
-const Dashboard = () => {
+import MicIcon from '@mui/icons-material/Mic'
+const Home = () => {
   const [searchParam, setSearchParam] = useSearchParams()
   console.log(searchParam.get('uid'))
   console.log(searchParam.get('role'))
@@ -56,7 +58,13 @@ const Dashboard = () => {
   const handleChange = (event) => {
     setText(event.target.value)
   }
-
+  const [open, setOpen] = React.useState(false)
+  const handleClose = () => {
+    setOpen(false)
+  }
+  const handleOpen = () => {
+    setOpen(true)
+  }
   useEffect(() => {
     axios
       .get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`)
@@ -80,11 +88,8 @@ const Dashboard = () => {
   console.log('🚀 ~ messages:', messages)
 
   function botSelected(e: ChangeEvent<HTMLSelectElement>): void {
-    console.log(e.target.value)
-    alert(e.target.value)
     const arr = bot?.filter((bots) => bots.assistantId === e.target.value)
     setactiveBot(arr != undefined ? arr[0] : null)
-    console.log(arr != undefined && arr[0])
     setMessages([
       {
         message: 'Hi there How can I help you',
@@ -401,4 +406,14 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Home
+{
+  /* <Button onClick={handleOpen}>Show backdrop</Button>
+<Backdrop
+  sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+  open={open}
+  onClick={handleClose}
+>
+  <CircularProgress color="inherit" />
+</Backdrop> */
+}

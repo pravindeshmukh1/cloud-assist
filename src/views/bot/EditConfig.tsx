@@ -261,6 +261,7 @@ const EditConfig = () => {
                       </MenuItem>
                       <MenuItem value="gpt-4o">GPT-4o</MenuItem>
                       <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
+                      <MenuItem value="gpt-4o-mini">GPT-4o Mini</MenuItem>
                       <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
                     </Select>
                   </FormControl>
@@ -396,7 +397,9 @@ const EditConfig = () => {
           </form>
         )}
       </Formik>
+      
     </Card>
+    
   )
 }
 

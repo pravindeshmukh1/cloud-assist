@@ -10,6 +10,8 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilMagnifyingGlass } from '@coreui/icons'
+import { Button } from '@coreui/coreui'
+import { Link } from 'react-router-dom'
 
 const Page404 = () => {
   return (
@@ -24,13 +26,17 @@ const Page404 = () => {
                 The page you are looking for was not found.
               </p>
             </div>
-            <CInputGroup className="input-prepend">
-              <CInputGroupText>
+            {/* <Button>Home</Button> */}
+            {/* <Button>Home</Button> */}
+            {/* <CInputGroup className="input-prepend"> */}
+              {/* <CInputGroupText>
                 <CIcon icon={cilMagnifyingGlass} />
-              </CInputGroupText>
-              <CFormInput type="text" placeholder="What are you looking for?" />
-              <CButton color="info">Search</CButton>
-            </CInputGroup>
+              </CInputGroupText> */}
+              {/* <CFormInput type="text" placeholder="What are you looking for?" /> */}
+              <Link to="/">
+              <CButton color="info">Home</CButton>
+              </Link> 
+            {/* </CInputGroup> */}
           </CCol>
         </CRow>
       </CContainer>

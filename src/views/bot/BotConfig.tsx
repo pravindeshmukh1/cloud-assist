@@ -384,6 +384,18 @@ const BotConfig = () => {
   const fileRows = [createData('File name', '1MB', '2024-09-14T03:55:00.391336')]
   console.log('🚀 ~ fileRows:', fileRows)
 
+  const [pageFile, setPageFile] = useState(0)
+  const [rowsPerPageFile, setRowsPerPageFile] = useState(10)
+
+  const handleChangePageFile = (event: unknown, newPage: number) => {
+    setPageFile(newPage)
+  }
+
+  const handleChangeRowsPerPageFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPageFile(+event.target.value)
+    setPageFile(0)
+  }
+
   //upload text
   interface textColumn {
     id: 'text' | 'size' | 'uploadDate'
@@ -424,18 +436,21 @@ const BotConfig = () => {
     createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
     createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
     createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
   ]
 
-  //upload text
+  const [pageText, setPageText] = useState(0)
+  const [rowsPerPageText, setRowsPerPageText] = useState(10)
+
+  const handleChangePageText = (event: unknown, newPage: number) => {
+    setPageText(newPage)
+  }
+
+  const handleChangeRowsPerPageText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPageText(+event.target.value)
+    setPageText(0)
+  }
+
+  //upload faq
   interface faqColumn {
     id: 'question' | 'answer' | 'status' | 'uploadDate'
     label: string
@@ -485,7 +500,24 @@ const BotConfig = () => {
     createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
     createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
     createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
   ]
+  const [pageFaq, setPageFaq] = useState(0)
+  const [rowsPerPageFaq, setRowsPerPageFaq] = useState(10)
+
+  const handleChangePageFaq = (event: unknown, newPage: number) => {
+    setPageFaq(newPage)
+  }
+
+  const handleChangeRowsPerPageFaq = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPageFaq(+event.target.value)
+    setPageFaq(0)
+  }
 
   //upload website
   interface websiteColumn {
@@ -529,6 +561,18 @@ const BotConfig = () => {
     createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
   ]
 
+  const [pageWeb, setPageWeb] = useState(0)
+  const [rowsPerPageWeb, setRowsPerPageWeb] = useState(10)
+
+  const handleChangePageWeb = (event: unknown, newPage: number) => {
+    setPageWeb(newPage)
+  }
+
+  const handleChangeRowsPerPageWeb = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPageWeb(+event.target.value)
+    setPageWeb(0)
+  }
+
   //upload api integration
   interface apiColumn {
     id: 'api' | 'key' | 'uploadDate'
@@ -564,16 +608,16 @@ const BotConfig = () => {
   }
   const apiRows = [createAPIData('DSA', 'asftfxgdwe3kjs982jsldwk', '2024-09-14T03:55:00.391336')]
 
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [pageApi, setPageApi] = useState(0)
+  const [rowsPerPageApi, setRowsPerPageApi] = useState(10)
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
+  const handleChangePageApi = (event: unknown, newPage: number) => {
+    setPageApi(newPage)
   }
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value)
-    setPage(0)
+  const handleChangeRowsPerPageApi = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPageApi(+event.target.value)
+    setPageApi(0)
   }
 
   //tabs
@@ -715,10 +759,9 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'blue' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
                     id="customized-dialog-title"
                     fontSize={18}
-                    style={{ backgroundColor: 'skyblue' }}
                   >
                     Add Text
                   </DialogTitle>
@@ -778,7 +821,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -874,7 +917,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -964,7 +1007,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1047,7 +1090,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1129,7 +1172,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1491,6 +1534,347 @@ const BotConfig = () => {
         )}
       </Formik>
 
+      <Box sx={{ bgcolor: 'background.paper' }}>
+        <AppBar position="static">
+          <Tabs
+            value={value}
+            onChange={handleTabChange}
+            indicatorColor="secondary"
+            textColor="inherit"
+            variant="fullWidth"
+            aria-label="full width tabs example"
+            sx={{ backgroundColor: 'lightgray', color: 'black' }}
+          >
+            <Tab label="Files" {...a11yProps(0)} />
+            <Tab label="Text" {...a11yProps(1)} />
+            <Tab label="FAQ" {...a11yProps(2)} />
+            <Tab label="Website URL" {...a11yProps(3)} />
+            <Tab label="Integration API" {...a11yProps(4)} />
+          </Tabs>
+        </AppBar>
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table" size="small">
+                <TableHead style={{ backgroundColor: 'skyblue' }}>
+                  <TableRow>
+                    {fileColumns.map((column) => (
+                      <>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      </>
+                    ))}
+                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {fileRows
+                    .slice(pageFile * rowsPerPageFile, pageFile * rowsPerPageFile + rowsPerPageFile)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                          {fileColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <>
+                                <TableCell key={column.id} align={column.align}>
+                                  {column.format && typeof value === 'number'
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              </>
+                            )
+                          })}
+                          <TableCell sx={{ float: 'left' }}>
+                            <IconButton color="error" size="small">
+                              <DeleteForeverIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={fileRows.length}
+              rowsPerPage={rowsPerPageFile}
+              page={pageFile}
+              onPageChange={handleChangePageFile}
+              onRowsPerPageChange={handleChangeRowsPerPageFile}
+            />
+          </Paper>
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table" size="small">
+                <TableHead style={{ backgroundColor: 'skyblue' }}>
+                  <TableRow>
+                    {textColumns.map((column) => (
+                      <>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      </>
+                    ))}
+                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {textRows
+                    .slice(pageText * rowsPerPageText, pageText * rowsPerPageText + rowsPerPageText)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                          {textColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <>
+                                <TableCell key={column.id} align={column.align}>
+                                  {column.format && typeof value === 'number'
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              </>
+                            )
+                          })}
+                          <TableCell sx={{ float: 'left' }}>
+                            <IconButton color="default" size="small">
+                              <DriveFileRenameOutlineIcon />
+                            </IconButton>
+                            <IconButton color="error" size="small">
+                              <DeleteForeverIcon />
+                            </IconButton>
+                            <Switch {...label} color="success" />
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={textRows.length}
+              rowsPerPage={rowsPerPageText}
+              page={pageText}
+              onPageChange={handleChangePageText}
+              onRowsPerPageChange={handleChangeRowsPerPageText}
+            />
+          </Paper>
+        </TabPanel>
+        <TabPanel value={value} index={2} dir={theme.direction}>
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table" size="small">
+                <TableHead style={{ backgroundColor: 'skyblue' }}>
+                  <TableRow>
+                    {faqColumns.map((column) => (
+                      <>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      </>
+                    ))}
+                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {faqRows
+                    .slice(pageFaq * rowsPerPageFaq, pageFaq * rowsPerPageFaq + rowsPerPageFaq)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                          {faqColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <>
+                                <TableCell key={column.id} align={column.align}>
+                                  {column.format && typeof value === 'number'
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              </>
+                            )
+                          })}
+                          <TableCell sx={{ float: 'left' }}>
+                            <IconButton color="default" size="small">
+                              <DriveFileRenameOutlineIcon />
+                            </IconButton>
+                            <IconButton color="error" size="small">
+                              <DeleteForeverIcon />
+                            </IconButton>
+                            <Switch {...label} color="success" />
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={faqRows.length}
+              rowsPerPage={rowsPerPageFaq}
+              page={pageFaq}
+              onPageChange={handleChangePageFaq}
+              onRowsPerPageChange={handleChangeRowsPerPageFaq}
+            />
+          </Paper>
+        </TabPanel>
+        <TabPanel value={value} index={3} dir={theme.direction}>
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table" size="small">
+                <TableHead style={{ backgroundColor: 'skyblue' }}>
+                  <TableRow>
+                    {websiteColumns.map((column) => (
+                      <>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      </>
+                    ))}
+                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {websiteRows
+                    .slice(pageWeb * rowsPerPageWeb, pageWeb * rowsPerPageWeb + rowsPerPageWeb)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                          {websiteColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <>
+                                <TableCell key={column.id} align={column.align}>
+                                  {column.format && typeof value === 'number'
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              </>
+                            )
+                          })}
+                          <TableCell sx={{ float: 'left' }}>
+                            <IconButton color="default" size="small">
+                              <DriveFileRenameOutlineIcon />
+                            </IconButton>
+                            <IconButton color="error" size="small">
+                              <DeleteForeverIcon />
+                            </IconButton>
+                            <IconButton color="secondary" size="small">
+                              <CachedIcon />
+                            </IconButton>
+                            <Switch {...label} color="success" />
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={websiteRows.length}
+              rowsPerPage={rowsPerPageWeb}
+              page={pageWeb}
+              onPageChange={handleChangePageWeb}
+              onRowsPerPageChange={handleChangeRowsPerPageWeb}
+            />
+          </Paper>
+        </TabPanel>
+        <TabPanel value={value} index={4} dir={theme.direction}>
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table" size="small">
+                <TableHead style={{ backgroundColor: 'skyblue' }}>
+                  <TableRow>
+                    {apiColumns.map((column) => (
+                      <>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      </>
+                    ))}
+                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {apiRows
+                    .slice(pageApi * rowsPerPageApi, pageApi * rowsPerPageApi + rowsPerPageApi)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                          {apiColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <>
+                                <TableCell key={column.id} align={column.align}>
+                                  {column.format && typeof value === 'number'
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              </>
+                            )
+                          })}
+                          <TableCell sx={{ float: 'left' }}>
+                            <IconButton color="default" size="small">
+                              <DriveFileRenameOutlineIcon />
+                            </IconButton>
+                            <IconButton color="error" size="small">
+                              <DeleteForeverIcon />
+                            </IconButton>
+                            <IconButton color="secondary" size="small">
+                              <CachedIcon />
+                            </IconButton>
+                            <Switch {...label} color="success" />
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={apiRows.length}
+              rowsPerPage={rowsPerPageApi}
+              page={pageApi}
+              onPageChange={handleChangePageApi}
+              onRowsPerPageChange={handleChangeRowsPerPageApi}
+            />
+          </Paper>
+        </TabPanel>
+      </Box>
     </Card>
   )
 }

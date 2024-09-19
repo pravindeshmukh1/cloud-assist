@@ -25,7 +25,7 @@ import { Link, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import constants from '../../constants'
 import { useState } from 'react'
-import { Assistant, Bot,Document } from '../../interface'
+import { Assistant, Bot, Document } from '../../interface'
 
 
 function createData(fileName: string, size: string, uploadDate: string, tags: string) {
@@ -36,31 +36,35 @@ const rows = [createData('watch?v=lFqxenB9CX8', '33.9MB', '22 Apr 2022, 1:43 PM'
 const EditBot = () => {
   const location = useLocation()
   const state = location.state
-  const [assistant, setAssistant] = useState<Bot[]>()
-  const [documents, setDocuments] = useState<Document[]>()
+  const [assistant, setassistant] = useState<Bot[]>()
+  const [selectedAssistant, setselectedAssistant] = useState<Bot>()
+  const [documents, setdocuments] = useState<Document[]>()
   const [bot, setBot] = React.useState("")
-  if(state!=null){
+  if (state != null) {
     // setBot(state.botVal)
   }
   React.useEffect(() => {
-  
-    axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res=>{
-      setAssistant(res.data);
-      if(state!=null){
-      setBot(state.botVal)
-      }else{
+
+    axios.get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`).then(res => {
+      setassistant(res.data);
+      if (state != null) {
+        setBot(state.botVal)
+      } else {
         setBot(res.data[0].assistantId)
+        setselectedAssistant(assistant?.filter(res => res.assistantId == bot)[0])
       }
     })
   }, [])
   React.useEffect(() => {
-    if(bot!=null){
-    axios.post<Document[]>(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${bot}`).then(res=>{
-      setDocuments(res.data);
-    })}
+    if (bot != null) {
+      axios.post<Document[]>(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${bot}`).then(res => {
+        setdocuments(res.data);
+      })
+    }
   }, [bot])
   const handleChange = (event: SelectChangeEvent) => {
     alert(event.target.value as string)
+    setselectedAssistant(assistant?.filter(res => res.assistantId == event.target.value)[0])
     setBot(event.target.value as string)
   }
 
@@ -95,9 +99,7 @@ const EditBot = () => {
               >
                 {assistant?.map((res: Bot) => {
                   return (
-                    <MenuItem key={res.assistantId} value={res.assistantId}>
-                      {res.name}
-                    </MenuItem>
+                    <MenuItem key={res.assistantId} value={res.assistantId}>{res.name}</MenuItem>
                   )
                 })}
               </Select>
@@ -110,7 +112,20 @@ const EditBot = () => {
         />
 
         <CardContent>
-          Document Count : {documents?.length}
+          <div>
+            <div>
+              {selectedAssistant?.name}
+            </div>
+            <div>
+              {selectedAssistant?.description}
+            </div>
+            <div>
+              {selectedAssistant?.instruction}
+            </div>
+
+
+
+          </div>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
               <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -123,40 +138,20 @@ const EditBot = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {documents
-                  ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow
-                      key={row.documentId}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {row.docName}
-                      </TableCell>
-                      <TableCell align="left">{row.docSize}</TableCell>
-                      <TableCell align="left">{row.uploadedDt}</TableCell>
-                      <TableCell align="left">{row.status}</TableCell>
-                      <TableCell align="left">
-                        <ButtonGroup
-                          variant="outlined"
-                          aria-label="Basic button group"
-                          size="small"
-                        >
-                          <Link
-                            to="/editBotConfig"
-                            state={{
-                              row: documents,
-                              assistant: assistant?.filter((res) => res.assistantId == bot),
-                            }}
-                          >
-                            <Button
-                              component="label"
-                              variant="outlined"
-                              startIcon={<Edit color="info" />}
-                            >
-                              Edit
-                            </Button>
-                          </Link>
+                {documents?.map((row) => (
+                  <TableRow
+                    key={row.documentId}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.docName}
+                    </TableCell>
+                    <TableCell align="left">{row.docSize}</TableCell>
+                    <TableCell align="left">{row.uploadedDt}</TableCell>
+                    <TableCell align="left">{row.status}</TableCell>
+                    <TableCell align="left">
+                      <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
+                        <Link to="/editBotConfig" state={{ row: documents, assistant: assistant?.filter(res => res.assistantId == bot) }}>
                           <Button
                             component="label"
                             variant="outlined"
@@ -165,6 +160,7 @@ const EditBot = () => {
                           >
                             Delete
                           </Button>
+                          </Link>
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>
