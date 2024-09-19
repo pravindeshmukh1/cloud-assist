@@ -160,6 +160,7 @@ const EditBot = () => {
                           >
                             Delete
                           </Button>
+                          </Link>
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>

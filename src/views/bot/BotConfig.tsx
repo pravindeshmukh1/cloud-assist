@@ -538,7 +538,7 @@ if (t.match(regex)) {
                   titleTypographyProps={{ fontSize: 18 }}
                 />
 
-                  <FormControl size="small" fullWidth sx={{ marginTop: 1, marginBottom: 1 }}>
+                  {/* <FormControl size="small" fullWidth sx={{ marginTop: 1, marginBottom: 1 }}>
                     <InputLabel id="demo-select-small-label">Model</InputLabel>
                     <Select
                       labelId="demo-select-small-label"
@@ -554,7 +554,7 @@ if (t.match(regex)) {
                       <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
                       <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
 
                   {/* <TextField
                     label="Prompt Name"
@@ -576,7 +576,7 @@ if (t.match(regex)) {
                       },
                     }}
                   /> */}
-                  <TextField
+                  {/* <TextField
                     multiline
                     label="Prompt Instructions"
                     name="instructions"
@@ -596,9 +596,9 @@ if (t.match(regex)) {
                         ),
                       },
                     }}
-                  />
+                  /> */}
 
-                  <Button
+                  {/* <Button
                     component="label"
                     // role={undefined}
                     variant="outlined"
@@ -606,7 +606,7 @@ if (t.match(regex)) {
                     startIcon={<CloudUploadIcon />}
                     fullWidth
                     sx={{ p: 10, border: '1px dashed grey', marginTop: 2, marginBottom: 0 }}
-                    />
+                    /> */}
                 <Dialog
                   maxWidth="lg"
                   open={dialog}
