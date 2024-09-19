@@ -4,6 +4,7 @@ import constants from '../../constants'
 import { Assistant, Bot } from '../../interface'
 import { useState } from 'react'
 import {
+  AppBar,
   Box,
   Button,
   Card,
@@ -19,6 +20,7 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -28,11 +30,15 @@ import {
   ListItemText,
   MenuItem,
   Paper,
+  Radio,
+  RadioGroup,
   Select,
   SelectChangeEvent,
   Stack,
   styled,
   Switch,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from '@mui/material'
@@ -60,11 +66,55 @@ import HdrStrongOutlinedIcon from '@mui/icons-material/HdrStrongOutlined'
 import HdrWeakOutlinedIcon from '@mui/icons-material/HdrWeakOutlined'
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import CachedIcon from '@mui/icons-material/Cached'
 import MoreTimeIcon from '@mui/icons-material/MoreTime'
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
-import DoneIcon from '@mui/icons-material/Done'
+import { useTheme } from '@emotion/react'
+import TextSnippetIcon from '@mui/icons-material/TextSnippet'
+import ApiIcon from '@mui/icons-material/Api'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 
+//switch
+const label = { inputProps: { 'aria-label': 'Size switch demo' } }
+
+//tabs
+interface TabPanelProps {
+  children?: React.ReactNode
+  dir?: string
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  )
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  }
+}
+
+//
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -161,15 +211,13 @@ const BotConfig = () => {
       }
     }
   }
-
+  //select model for bot
   const [model, setModel] = useState('')
-
   const handleModelChange = (event: SelectChangeEvent) => {
     setModel(event.target.value)
   }
 
   //Bot Schedule
-
   // Initialize state with an empty array for each weekday and enabled status
   const [schedules, setSchedules] = useState(
     weekdays.reduce((acc, day) => {
@@ -240,6 +288,9 @@ const BotConfig = () => {
   }
 
   //model
+  const [fileDialog, setFileDialogOpen] = useState(false)
+  const [textDialog, setTextDialogOpen] = useState(false)
+  const [apiDialog, setAPIDialogOpen] = useState(false)
   const [dialog, setDialogOpen] = useState(false)
   const [youtubeDialog, setYoutubeDialog] = useState(false)
   const [faqDialog, setFaqDialog] = useState(false)
@@ -247,17 +298,28 @@ const BotConfig = () => {
   const handleDialogOpen = () => {
     setDialogOpen(true)
   }
-
-  const handleClose = () => {
-    setDialogOpen(false)
-    setYoutubeDialog(false)
-    setFaqDialog(false)
+  const handleFileDialogOpen = () => {
+    setFileDialogOpen(true)
+  }
+  const handleTextDialogOpen = () => {
+    setTextDialogOpen(true)
+  }
+  const handleAPIDialogOpen = () => {
+    setAPIDialogOpen(true)
   }
   const handleYoutubeDialogOpen = () => {
     setYoutubeDialog(true)
   }
   const handleFaqDialogOpen = () => {
     setFaqDialog(true)
+  }
+  const handleClose = () => {
+    setDialogOpen(false)
+    setYoutubeDialog(false)
+    setFaqDialog(false)
+    setFileDialogOpen(false)
+    setTextDialogOpen(false)
+    setAPIDialogOpen(false)
   }
 
   //faq
@@ -286,60 +348,222 @@ const BotConfig = () => {
     // Handle form submission (e.g., send data to server)
     console.log(faqs)
   }
-  // bot files
-  interface Column {
-    id: string
+  //upload files
+  interface FileColumn {
+    id: 'name' | 'size' | 'uploadDate'
     label: string
     minWidth?: number
-    align?: 'left'
+    align?: 'right'
     format?: (value: number) => string
   }
-
-  const columns: readonly Column[] = [
+  const fileColumns: readonly FileColumn[] = [
     { id: 'name', label: 'File Name', minWidth: 170 },
     {
       id: 'size',
       label: 'Size',
       minWidth: 170,
-      align: 'left',
-      format: (value: number) => value.toLocaleString('en-US'),
+      align: 'right',
     },
     {
-      id: 'noOfDocs',
-      label: 'No of Documents',
+      id: 'uploadDate',
+      label: 'Upload Date',
       minWidth: 170,
-      align: 'left',
-      format: (value: number) => value.toLocaleString('en-US'),
-    },
-    {
-      id: 'createdDt',
-      label: 'Created Date',
-      minWidth: 170,
-      align: 'left',
-      format: (value: number) => value.toLocaleString('en-US'),
+      align: 'right',
     },
   ]
-  function createData(name: string, code: string, population: number, size: number): Data {
-    const density = population / size
-    return { name, code, population, size, density }
+
+  interface FileData {
+    name: string
+    size: string
+    uploadDate: string
   }
-  const rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-    createData('Australia', 'AU', 25475400, 7692024),
-    createData('Germany', 'DE', 83019200, 357578),
-    createData('Ireland', 'IE', 4857000, 70273),
-    createData('Mexico', 'MX', 126577691, 1972550),
-    createData('Japan', 'JP', 126317000, 377973),
-    createData('France', 'FR', 67022000, 640679),
-    createData('United Kingdom', 'GB', 67545757, 242495),
-    createData('Russia', 'RU', 146793744, 17098246),
-    createData('Nigeria', 'NG', 200962417, 923768),
-    createData('Brazil', 'BR', 210147125, 8515767),
+
+  function createData(name: string, size: string, uploadDate: string): FileData {
+    return { name, size, uploadDate }
+  }
+  const fileRows = [createData('File name', '1MB', '2024-09-14T03:55:00.391336')]
+  console.log('🚀 ~ fileRows:', fileRows)
+
+  //upload text
+  interface textColumn {
+    id: 'text' | 'size' | 'uploadDate'
+    label: string
+    minWidth?: number
+    align?: 'right'
+    format?: (value: number) => string
+  }
+  const textColumns: readonly textColumn[] = [
+    { id: 'text', label: 'Text', minWidth: 170 },
+    {
+      id: 'size',
+      label: 'Size',
+      minWidth: 170,
+      align: 'right',
+    },
+    {
+      id: 'uploadDate',
+      label: 'Upload Date',
+      minWidth: 170,
+      align: 'right',
+    },
   ]
+
+  interface TextData {
+    text: string
+    size: string
+    uploadDate: string
+  }
+
+  function createTextData(text: string, size: string, uploadDate: string): TextData {
+    return { text, size, uploadDate }
+  }
+  const textRows = [
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
+  ]
+
+  //upload text
+  interface faqColumn {
+    id: 'question' | 'answer' | 'status' | 'uploadDate'
+    label: string
+    minWidth?: number
+    align?: 'right'
+    format?: (value: number) => string
+  }
+  const faqColumns: readonly faqColumn[] = [
+    { id: 'question', label: 'Question', minWidth: 170 },
+    {
+      id: 'answer',
+      label: 'Answer',
+      minWidth: 170,
+      align: 'right',
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      minWidth: 170,
+      align: 'right',
+    },
+    {
+      id: 'uploadDate',
+      label: 'Upload Date',
+      minWidth: 170,
+      align: 'right',
+    },
+  ]
+
+  interface FAQData {
+    question: string
+    answer: string
+    status: string
+    uploadDate: string
+  }
+
+  function createFAQData(
+    question: string,
+    answer: string,
+    status: string,
+    uploadDate: string,
+  ): FAQData {
+    return { question, answer, status, uploadDate }
+  }
+  const faqRows = [
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
+  ]
+
+  //upload website
+  interface websiteColumn {
+    id: 'websiteUrl' | 'status' | 'uploadDate'
+    label: string
+    minWidth?: number
+    align?: 'right'
+    format?: (value: number) => string
+  }
+  const websiteColumns: readonly websiteColumn[] = [
+    { id: 'websiteUrl', label: 'Website Url', minWidth: 170 },
+    {
+      id: 'status',
+      label: 'Status',
+      minWidth: 170,
+      align: 'right',
+    },
+    {
+      id: 'uploadDate',
+      label: 'Upload Date',
+      minWidth: 170,
+      align: 'right',
+    },
+  ]
+
+  interface WebsiteData {
+    websiteUrl: string
+    status: string
+    uploadDate: string
+  }
+
+  function createWebsiteData(websiteUrl: string, status: string, uploadDate: string): WebsiteData {
+    return { websiteUrl, status, uploadDate }
+  }
+  const websiteRows = [
+    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
+    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
+    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
+    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
+    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
+    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
+  ]
+
+  //upload api integration
+  interface apiColumn {
+    id: 'api' | 'key' | 'uploadDate'
+    label: string
+    minWidth?: number
+    align?: 'right'
+    format?: (value: number) => string
+  }
+  const apiColumns: readonly apiColumn[] = [
+    { id: 'api', label: 'API', minWidth: 170 },
+    {
+      id: 'key',
+      label: 'Key',
+      minWidth: 170,
+      align: 'right',
+    },
+    {
+      id: 'uploadDate',
+      label: 'Upload Date',
+      minWidth: 170,
+      align: 'right',
+    },
+  ]
+
+  interface APIData {
+    api: string
+    key: string
+    uploadDate: string
+  }
+
+  function createAPIData(api: string, key: string, uploadDate: string): APIData {
+    return { api, key, uploadDate }
+  }
+  const apiRows = [createAPIData('DSA', 'asftfxgdwe3kjs982jsldwk', '2024-09-14T03:55:00.391336')]
+
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
@@ -351,33 +575,14 @@ const BotConfig = () => {
     setRowsPerPage(+event.target.value)
     setPage(0)
   }
-  interface Document {
-    size: string
-    id: number
-    name: string
-    description: string
-    assistantId: string
-    threadId: string
-    userId: string
-    documentId: string
-    createdDt: string
-    instruction: string
-  }
-  const [document, setDocument] = useState<Document[]>([
-    {
-      id: 0,
-      name: '',
-      description: '',
-      assistantId: '',
-      threadId: '',
-      userId: '',
-      documentId: '',
-      createdDt: '',
-      instruction: '',
-      size: '',
-    },
-  ])
 
+  //tabs
+  const theme = useTheme()
+  const [value, setValue] = useState(0)
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue)
+  }
   return (
     <Card>
       {/* {bot?.id} */}
@@ -460,6 +665,22 @@ const BotConfig = () => {
                         Add
                       </CDropdownToggle>
                       <CDropdownMenu>
+                        <CDropdownItem style={{ marginRight: 12 }} onClick={handleFileDialogOpen}>
+                          <UploadFileRoundedIcon
+                            fontSize="small"
+                            color="primary"
+                            style={{ marginRight: 10 }}
+                          />
+                          File Upload
+                        </CDropdownItem>
+                        <CDropdownItem style={{ marginRight: 12 }} onClick={handleTextDialogOpen}>
+                          <TextSnippetIcon
+                            fontSize="small"
+                            color="primary"
+                            style={{ marginRight: 10 }}
+                          />
+                          Text
+                        </CDropdownItem>
                         <CDropdownItem style={{ marginRight: 12 }} onClick={handleDialogOpen}>
                           <LinkIcon fontSize="small" color="primary" style={{ marginRight: 10 }} />
                           Website Url
@@ -476,8 +697,10 @@ const BotConfig = () => {
                           />
                           FAQ
                         </CDropdownItem>
-                        <CDropdownDivider />
-                        <CDropdownItem href="#">Separated link</CDropdownItem>
+                        <CDropdownItem style={{ marginRight: 12 }} onClick={handleAPIDialogOpen}>
+                          <ApiIcon fontSize="small" color="primary" style={{ marginRight: 10 }} />
+                          API
+                        </CDropdownItem>
                       </CDropdownMenu>
                     </CDropdown>
                   }
@@ -485,6 +708,254 @@ const BotConfig = () => {
                   subheader=""
                   titleTypographyProps={{ fontSize: 18 }}
                 />
+                <Dialog
+                  maxWidth="lg"
+                  open={textDialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'blue' }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                    style={{ backgroundColor: 'skyblue' }}
+                  >
+                    Add Text
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+
+                  <DialogContent>
+                    <DialogContentText>
+                      <Box sx={{}}>
+                        <Box component="section">
+                          <Typography color="gray" fontSize={16} margin={2}>
+                            Enter the text below, and Apollo will use it to enhance its knowledge
+                            and improve its response.
+                          </Typography>
+                        </Box>
+
+                        <TextField
+                          id="standard-multiline-flexible"
+                          label="Add Text"
+                          multiline
+                          maxRows={10}
+                          variant="outlined"
+                          fullWidth
+                        />
+                        <Box sx={{ mt: 1 }}>
+                          <Button
+                            variant="contained"
+                            type="submit"
+                            color="info"
+                            sx={{ float: 'right' }}
+                            disabled={isSubmitting}
+                            startIcon={<SaveAltOutlinedIcon />}
+                          >
+                            Save
+                          </Button>
+                        </Box>
+                      </Box>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog
+                  maxWidth="lg"
+                  open={apiDialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                  >
+                    API
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                  <DialogContent>
+                    <DialogContentText>
+                      <Box sx={{}}>
+                        <Box component="section">
+                          <Typography color="gray" fontSize={16} margin={1}>
+                            Your chatbot can interact with any API (your own or external) using an
+                            <br></br>OpenAPI specification and basic configuration details
+                          </Typography>
+                        </Box>
+
+                        <Stack spacing={2}>
+                          <TextField
+                            id="standard-multiline-flexible"
+                            label="Please Schema File URL:"
+                            variant="outlined"
+                            fullWidth
+                            size="small"
+                          />
+                          <TextField
+                            id="standard-multiline-flexible"
+                            label="Please API base URL:"
+                            variant="outlined"
+                            fullWidth
+                            size="small"
+                          />
+                          <FormControl>
+                            <Typography color="gray" fontSize={16}>
+                              Authentication Method
+                            </Typography>
+                            <RadioGroup
+                              row
+                              aria-labelledby="demo-row-radio-buttons-group-label"
+                              name="row-radio-buttons-group"
+                            >
+                              <FormControlLabel
+                                value="noAuth "
+                                control={<Radio size="small" />}
+                                label="No Auth"
+                              />
+                              <FormControlLabel
+                                value="apiKey"
+                                control={<Radio size="small" />}
+                                label="API Key"
+                              />
+                              <FormControlLabel
+                                value="basic"
+                                control={<Radio size="small" />}
+                                label="Basic"
+                              />
+                            </RadioGroup>
+                          </FormControl>
+                        </Stack>
+
+                        <Box sx={{ mt: 1 }}>
+                          <Button
+                            variant="contained"
+                            type="submit"
+                            color="info"
+                            sx={{ float: 'right' }}
+                            disabled={isSubmitting}
+                            startIcon={<SaveAltOutlinedIcon />}
+                          >
+                            Save
+                          </Button>
+                        </Box>
+                      </Box>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog
+                  maxWidth="lg"
+                  open={fileDialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                  >
+                    File Upload
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+
+                  <DialogContent>
+                    <DialogContentText>
+                      <Box sx={{}}>
+                        <Button
+                          component="label"
+                          // role={undefined}
+                          variant="outlined"
+                          tabIndex={-1}
+                          startIcon={<CloudUploadIcon />}
+                          fullWidth
+                          sx={{ p: 10, border: '1px dashed grey', marginTop: 2, marginBottom: 0 }}
+                        >
+                          file here to upload
+                          <VisuallyHiddenInput
+                            type="file"
+                            id="file"
+                            onChange={handleFileChange}
+                            multiple
+                          />
+                        </Button>
+                        <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
+                          <Typography color="gray" fontSize={13} padding={0}>
+                            <b>Supported Formats:</b> - Words, TXT, Excel, PDF Doc, DocX, PPT, PPTX,
+                            XLS, XLSX, CSV Google Docs, Google Sheet, Google Slides , SQL Videos -
+                            MP4, MOV, WMV
+                          </Typography>
+                        </Box>
+                        <Box>
+                          {files &&
+                            [...files].map((file, index) => (
+                              <Box key={file.name}>
+                                <List>
+                                  <ListItem className="flex-row gap-2">
+                                    <Chip
+                                      variant="outlined"
+                                      color="info"
+                                      size="small"
+                                      label={index + 1}
+                                    />
+                                    <ListItemText primary={file.name} secondary={file.type} />
+                                    <ListItemButton sx={{ fontSize: '14px' }} disabled>
+                                      Size: {file.size} bytes
+                                    </ListItemButton>
+                                  </ListItem>
+                                </List>
+                              </Box>
+                            ))}
+                          <Button
+                            variant="contained"
+                            type="submit"
+                            color="info"
+                            sx={{ float: 'right' }}
+                            disabled={isSubmitting}
+                            startIcon={<SaveAltOutlinedIcon />}
+                          >
+                            Save
+                          </Button>
+                        </Box>
+                      </Box>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
 
                 <Dialog
                   maxWidth="lg"
@@ -493,7 +964,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1 }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -576,7 +1047,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1 }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -658,7 +1129,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1 }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'lightgrey' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1019,79 +1490,7 @@ const BotConfig = () => {
           </form>
         )}
       </Formik>
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="sticky table" size="small">
-            <TableHead style={{ backgroundColor: 'skyblue' }}>
-              <TableRow>
-                {columns.map((column) => (
-                  <>
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  </>
-                ))}
-                <TableCell
-                style={{backgroundColor: 'skyblue' }}
-                >
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {document.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                function deletAssistant(assistantId: string) {
-                  axios
-                    .delete(`${constants.deleteAssistant}/${assistantId}`)
-                    .catch((err) => console.log(err))
-                }
 
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                    {columns.map((column) => {
-                      const value = row[column.id]
-                      return (
-                        <>
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number'
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        </>
-                      )
-                    })}
-                    <TableCell sx={{ float: 'left' }}>
-                      <Button
-                        onClick={deletAssistant(row.assistantId)}
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        startIcon={<DeleteForeverIcon />}
-                        sx={{ mb: 2, mt: 2, float: 'right' }}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
     </Card>
   )
 }
