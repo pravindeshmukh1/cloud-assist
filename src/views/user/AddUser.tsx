@@ -7,7 +7,6 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import {
-  Avatar,
   Box,
   Button,
   ButtonGroup,
@@ -23,15 +22,11 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
-  Theme,
-  Typography,
-  useMediaQuery,
 } from '@mui/material'
 import { Delete, Edit } from '@mui/icons-material'
 import { useTheme } from '@emotion/react'
-import { GridCloseIcon } from '@mui/x-data-grid'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
-
+import CloseIcon from '@mui/icons-material/Close'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -65,9 +60,7 @@ const names = [
 function getStyles(name: string, botName: readonly string[]) {
   return {
     fontWeight:
-      botName.indexOf(name) === -1
-        ? 'typography.fontWeightRegular'
-        : 'typography.fontWeightMedium',
+      botName.indexOf(name) === -1 ? 'typography.fontWeightRegular' : 'typography.fontWeightMedium',
   }
 }
 
@@ -97,11 +90,11 @@ const AddUser = () => {
     setOpen(false)
   }
 
-    const [role, setRole] = React.useState('')
+  const [role, setRole] = React.useState('')
 
-    const handleRoleChange = (event: SelectChangeEvent) => {
-      setRole(event.target.value as string)
-    }
+  const handleRoleChange = (event: SelectChangeEvent) => {
+    setRole(event.target.value as string)
+  }
   const [botName, setbotName] = React.useState<string[]>([])
 
   const handleChange = (event: SelectChangeEvent<typeof botName>) => {
@@ -141,7 +134,7 @@ const AddUser = () => {
           onClose={handleClose}
           aria-labelledby="responsive-dialog-title"
         >
-          <DialogTitle id="responsive-dialog-title" color="info" borderBottom={1}>
+          <DialogTitle sx={{ m: 0, p: 1, borderBottom: 1 }} id="customized-dialog-title">
             Add User
           </DialogTitle>
           <IconButton
@@ -149,12 +142,12 @@ const AddUser = () => {
             onClick={handleClose}
             sx={(theme) => ({
               position: 'absolute',
-              left: 8,
+              right: 8,
               top: 8,
               color: theme.palette.grey[500],
             })}
           >
-            <GridCloseIcon />
+            <CloseIcon />
           </IconButton>
 
           <DialogContent>

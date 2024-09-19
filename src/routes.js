@@ -20,7 +20,7 @@ const routes = [
   { path: '/botList', name: 'BotList', element: BotList },
   { path: '/editBot', name: 'EditBot', element: EditBot },
   { path: '/botConfig', name: 'BotConfig', element: BotConfig },
-  { path: '/editBotConfig', name: 'EditConfig', element:EditConfig  },
+  { path: '/editBotConfig', name: 'EditConfig', element:EditConfig},
 
 ]
 

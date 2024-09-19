@@ -7,26 +7,39 @@
 * Licensed under MIT (https://github.com/coreui/coreui-free-react-admin-template/blob/main/LICENSE)
 -->
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <meta name="keyword" content="">
-    <title>CloudAssist</title>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <script id="fsc-api" src="https://sbl.onfastspring.com/sbl/1.0.1/fastspring-builder.min.js" type="text/javascript"
-      data-storefront="cloudpoint.onfastspring.com/popup-CloudAssist">
-      </script>
-  </head>
-  <body>
-    <noscript>
-      You need to enable JavaScript to run this app
-    </noscript>
-    <div id="root"></div>
-    <script type="module" src="/src/index.js"></script>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keyword" content="">
+  <title>CloudAssist</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  <!-- <script id="fsc-api" src="https://sbl.onfastspring.com/sbl/1.0.1/fastspring-builder.min.js" type="text/javascript"
+        data-storefront="fastspringexamples.test.onfastspring.com/popup-fastspringexamples">
+        </script> -->
+
+  <!-- production -->
+  <!-- <script id="fsc-api" src="https://sbl.onfastspring.com/sbl/1.0.1/fastspring-builder.min.js" type="text/javascript"
+                data-storefront="cloudpoint.onfastspring.com/popup-CloudAssist">
+                </script> -->
+  <!-- test -->
+  <script id="fsc-api" src="https://sbl.onfastspring.com/sbl/1.0.1/fastspring-builder.min.js" type="text/javascript"
+    data-storefront="cloudpoint.test.onfastspring.com/popup-CloudAssist">
+    </script>
+</head>
+
+<body>
+  <noscript>
+    You need to enable JavaScript to run this app
+  </noscript>
+  <div id="root"></div>
+  <script type="module" src="/src/index.js"></script>
+  <!-- built files will be auto injected -->
+</body>
+
 </html>

@@ -5,6 +5,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import TablePagination from '@mui/material/TablePagination'
 import Paper from '@mui/material/Paper'
 import {
   Box,
@@ -66,6 +67,21 @@ const EditBot = () => {
     setselectedAssistant(assistant?.filter(res => res.assistantId == event.target.value)[0])
     setBot(event.target.value as string)
   }
+
+  // pagination
+
+  const [page, setPage] = React.useState(0)
+  const [rowsPerPage, setRowsPerPage] = React.useState(10)
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value)
+    setPage(0)
+  }
+
   return (
     <Box>
       <Card>
@@ -139,26 +155,64 @@ const EditBot = () => {
                           <Button
                             component="label"
                             variant="outlined"
-                            startIcon={<Edit color="info" />}
+                            color="error"
+                            startIcon={<Delete color="error" />}
                           >
-                            Edit
+                            Delete
                           </Button>
-                        </Link>
+                        </ButtonGroup>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                {/* <TableRow
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    row
+                  </TableCell>
+                  <TableCell align="left">docSize</TableCell>
+                  <TableCell align="left">uploadedDt</TableCell>
+                  <TableCell align="left">status</TableCell>
+                  <TableCell align="left">
+                    <ButtonGroup variant="outlined" aria-label="Basic button group" size="small">
+                      <Link
+                        to="/editBotConfig"
+                        state={{
+                          row: documents,
+                          assistant: assistant?.filter((res) => res.assistantId == bot),
+                        }}
+                      >
                         <Button
                           component="label"
                           variant="outlined"
-                          color="error"
-                          startIcon={<Delete color="error" />}
+                          startIcon={<Edit color="info" />}
                         >
-                          Delete
+                          Edit
                         </Button>
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </Link>
+                      <Button
+                        component="label"
+                        variant="outlined"
+                        color="error"
+                        startIcon={<Delete color="error" />}
+                      >
+                        Delete
+                      </Button>
+                    </ButtonGroup>
+                  </TableCell>
+                </TableRow> */}
               </TableBody>
             </Table>
           </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </CardContent>
       </Card>
     </Box>

@@ -250,6 +250,7 @@ const BotList = () => {
                       {column.label}
                     </TableCell>
                   ))}
+                  <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -265,11 +266,11 @@ const BotList = () => {
                         const value = row[column.id]
                         return (
                           <>
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number'
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
+                            <TableCell key={column.id} align={column.align}>
+                              {column.format && typeof value === 'number'
+                                ? column.format(value)
+                                : value}
+                            </TableCell>
                           </>
                         )
                       })}
@@ -293,7 +294,7 @@ const BotList = () => {
           />
         </Paper>
       ) : (
-        <div>No assistant avalaible</div>
+        <div>No assistant available</div>
       )}
 
       <BootstrapDialog
@@ -302,17 +303,16 @@ const BotList = () => {
         open={open}
         fullWidth
       >
-        <DialogTitle sx={{ m: 0, p: 1, fontSize: 18 }} id="customized-dialog-title">
+        <DialogTitle sx={{ m: 0, p: 1, borderBottom: 1 }} id="customized-dialog-title">
           Create Bot
         </DialogTitle>
         <IconButton
           aria-label="close"
-          size="small"
           onClick={handleClose}
           sx={(theme) => ({
             position: 'absolute',
-            left: 8,
-            top: 1,
+            right: 8,
+            top: 8,
             color: theme.palette.grey[500],
           })}
         >
