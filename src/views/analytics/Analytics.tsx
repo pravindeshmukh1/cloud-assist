@@ -1,7 +1,4 @@
 import React, { useEffect, useRef } from 'react'
-
-import { CChartLine } from '@coreui/react-chartjs'
-import { getStyle } from '@coreui/utils'
 import { Bar } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -30,6 +27,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -67,18 +65,10 @@ const knowGapRow = [
 ]
 
 const Analytics = () => {
-  const [knowledgeExp, setKnowledgeExp] = React.useState('')
-  const [knowledgeUnit, setKnowledgeUnit] = React.useState('')
-  const [eventType, setEventType] = React.useState('')
+  const [bot, setBot] = React.useState('')
 
-  const handleKnowledgeExpChange = (event) => {
-    setKnowledgeExp(event.target.value as string)
-  }
-  const handleKnowledgeUnitChange = (event) => {
-    setKnowledgeUnit(event.target.value as string)
-  }
-  const handleEventTypeChange = (event) => {
-    setEventType(event.target.value as string)
+  const handleBotChange = (event) => {
+    setBot(event.target.value as string)
   }
 
   //table
@@ -125,170 +115,140 @@ const Analytics = () => {
   return (
     <>
       <Paper>
-        <Box display={'flex'} justifyContent={'space-between'} gap={2} padding={2}>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Knowledge Experience</InputLabel>
+        <Box display={'flex'} justifyContent={'flex-end'} gap={2} padding={2}>
+          <FormControl size="small" sx={{ minWidth: '120px' }}>
+            <InputLabel id="demo-simple-select-label">Bot</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={knowledgeExp}
-              label="Knowledge Experience"
-              onChange={handleKnowledgeExpChange}
-              size="small"
+              value={bot}
+              label="Bot"
+              onChange={handleBotChange}
             >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              <MenuItem value={'bot1'}>Bot 1</MenuItem>
+              <MenuItem value={'bot2'}>Bot 2</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Knowledge Unit</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={knowledgeUnit}
-              label="Knowledge Unit"
-              onChange={handleKnowledgeUnitChange}
-              size="small"
-            >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Event Type</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={eventType}
-              label="Event Type"
-              onChange={handleEventTypeChange}
-              size="small"
-            >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
+        
         </Box>
+
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ backgroundColor: 'lightgray' }}>
+              Top Asked Questions
+            </Typography>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader size="small" aria-label="a dense table">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: 'lightblue' }}>
+                    {questionColumns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        // style={{ minWidth: column.minWidth }}
+                        sx={{ backgroundColor: 'lightblue' }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {questionRow
+                    .slice(quePage * queRowsPerPage, quePage * queRowsPerPage + queRowsPerPage)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                          {questionColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                {column.format && typeof value === 'number'
+                                  ? column.format(value)
+                                  : value}
+                              </TableCell>
+                            )
+                          })}
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={questionRow.length}
+              rowsPerPage={queRowsPerPage}
+              page={quePage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ backgroundColor: 'lightgray' }}>
+              Knowledge Gaps
+            </Typography>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader size="small" aria-label="a dense table">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: 'lightblue' }}>
+                    {questionColumns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        // style={{ minWidth: column.minWidth }}
+                        sx={{ backgroundColor: 'lightblue' }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {knowGapRow
+                    .slice(
+                      quePage * knowGapRowsPerPage,
+                      knowGapPage * knowGapRowsPerPage + knowGapRowsPerPage,
+                    )
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                          {questionColumns.map((column) => {
+                            const value = row[column.id]
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                {column.format && typeof value === 'number'
+                                  ? column.format(value)
+                                  : value}
+                              </TableCell>
+                            )
+                          })}
+                        </TableRow>
+                      )
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={knowGapRow.length}
+              rowsPerPage={knowGapRowsPerPage}
+              page={knowGapPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent sx={{ width: '50vw', height: '50vh' }}>
+            <Bar options={options} data={data} />
+          </CardContent>
+        </Card>
       </Paper>
-      <Card>
-        <CardContent>
-          <Typography variant="h6" sx={{ backgroundColor: 'lightgray' }}>
-            Top Asked Questions
-          </Typography>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: 'lightblue' }}>
-                  {questionColumns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      // style={{ minWidth: column.minWidth }}
-                      sx={{ backgroundColor: 'lightblue' }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {questionRow
-                  .slice(quePage * queRowsPerPage, quePage * queRowsPerPage + queRowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                        {questionColumns.map((column) => {
-                          const value = row[column.id]
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.format && typeof value === 'number'
-                                ? column.format(value)
-                                : value}
-                            </TableCell>
-                          )
-                        })}
-                      </TableRow>
-                    )
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={questionRow.length}
-            rowsPerPage={queRowsPerPage}
-            page={quePage}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent>
-          <Typography variant="h6" sx={{ backgroundColor: 'lightgray' }}>
-            Knowledge Gaps
-          </Typography>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: 'lightblue' }}>
-                  {questionColumns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      // style={{ minWidth: column.minWidth }}
-                      sx={{ backgroundColor: 'lightblue' }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {knowGapRow
-                  .slice(
-                    quePage * knowGapRowsPerPage,
-                    knowGapPage * knowGapRowsPerPage + knowGapRowsPerPage,
-                  )
-                  .map((row) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                        {questionColumns.map((column) => {
-                          const value = row[column.id]
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.format && typeof value === 'number'
-                                ? column.format(value)
-                                : value}
-                            </TableCell>
-                          )
-                        })}
-                      </TableRow>
-                    )
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={knowGapRow.length}
-            rowsPerPage={knowGapRowsPerPage}
-            page={knowGapPage}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent sx={{ width: '50vw', height: '50vh' }}>
-          <Bar options={options} data={data} />
-        </CardContent>
-      </Card>
     </>
   )
 }

@@ -60,6 +60,7 @@ import constants from '../../constants'
 import {
   Box,
   Button,
+  ButtonGroup,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -77,6 +78,9 @@ import DialogActions from '@mui/material/DialogActions'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { Link, useLocation } from 'react-router-dom'
+import { Delete } from '@mui/icons-material'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -257,7 +261,6 @@ const BotList = () => {
                 {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                   function deletAssistant(assistantId: string) {
                     // axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
-                   
                   }
 
                   return (
@@ -274,9 +277,30 @@ const BotList = () => {
                           </>
                         )
                       })}
-                      {/* <TableCell>
-                        <Button>Delete</Button>
-                        </TableCell> */}
+                      <TableCell>
+                        <ButtonGroup
+                          variant="outlined"
+                          aria-label="Basic button group"
+                          size="small"
+                        >
+                          <Button
+                            component="label"
+                            variant="outlined"
+                            color="error"
+                            startIcon={<DriveFileRenameOutlineIcon color="error" />}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            component="label"
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Delete color="error" />}
+                          >
+                            Delete
+                          </Button>
+                        </ButtonGroup>
+                      </TableCell>
                     </TableRow>
                   )
                 })}
@@ -356,10 +380,10 @@ const BotList = () => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Link to="/botConfig"state={{name:name,model1:model}}>
-          <Button variant="outlined" color="inherit">
-            Create
-          </Button>
+          <Link to="/botConfig" state={{ name: name, model1: model }}>
+            <Button variant="outlined" color="inherit">
+              Create
+            </Button>
           </Link>
         </DialogActions>
       </BootstrapDialog>

@@ -759,7 +759,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -821,7 +821,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1007,7 +1007,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1090,7 +1090,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1172,7 +1172,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue'  }}
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1554,6 +1554,17 @@ const BotConfig = () => {
         </AppBar>
         <TabPanel value={value} index={0} dir={theme.direction}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <Button
+              variant="outlined"
+              type=""
+              color="info"
+              sx={{ float: 'right', mb: 2 }}
+              startIcon={<UploadFileRoundedIcon fontSize="small" color="primary" />}
+              onClick={handleFileDialogOpen}
+            >
+              File Upload
+            </Button>
+
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -1614,6 +1625,16 @@ const BotConfig = () => {
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <Button
+              variant="outlined"
+              type=""
+              color="info"
+              sx={{ float: 'right', mb: 2 }}
+              startIcon={<TextSnippetIcon fontSize="small" color="primary" />}
+              onClick={handleTextDialogOpen}
+            >
+              Text
+            </Button>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -1678,6 +1699,16 @@ const BotConfig = () => {
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <Button
+              variant="outlined"
+              type=""
+              color="info"
+              sx={{ float: 'right', mb: 2 }}
+              startIcon={<LiveHelpIcon fontSize="small" color="primary" />}
+              onClick={handleFaqDialogOpen}
+            >
+              Faq
+            </Button>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -1742,6 +1773,16 @@ const BotConfig = () => {
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <Button
+              variant="outlined"
+              type=""
+              color="info"
+              sx={{ float: 'right', mb: 2 }}
+              startIcon={<LinkIcon fontSize="small" color="primary" />}
+              onClick={handleDialogOpen}
+            >
+              Website Url
+            </Button>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -1809,6 +1850,16 @@ const BotConfig = () => {
         </TabPanel>
         <TabPanel value={value} index={4} dir={theme.direction}>
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <Button
+              variant="outlined"
+              type=""
+              color="info"
+              sx={{ float: 'right', mb: 2 }}
+              startIcon={<ApiIcon fontSize="small" color="primary" />}
+              onClick={handleAPIDialogOpen}
+            >
+              API
+            </Button>
             <TableContainer sx={{ maxHeight: 440 }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableHead style={{ backgroundColor: 'skyblue' }}>

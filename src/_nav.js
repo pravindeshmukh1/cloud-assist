@@ -92,24 +92,24 @@ if (localStorage.getItem('role') != 'Admin') {
 
     {
       component: CNavItem,
-      name: 'SignUp',
-      to: '/signUp',
+      name: 'LogOut',
+      to: 'https://cloudassist.cloudpoint.co.in/',
       icon: <CIcon icon={cilAccountLogout} customClassName="nav-icon" />,
       badge: {
         color: 'info',
         // text: 'NEW',
       },
     },
-    {
-      component: CNavItem,
-      name: 'SignIn',
-      to: '/signIn',
-      icon: <CIcon icon={cilAccountLogout} customClassName="nav-icon" />,
-      badge: {
-        color: 'info',
-        // text: 'NEW',
-      },
-    },
+    // {
+    //   component: CNavItem,
+    //   name: 'SignIn',
+    //   to: '/signIn',
+    //   icon: <CIcon icon={cilAccountLogout} customClassName="nav-icon" />,
+    //   badge: {
+    //     color: 'info',
+    //     // text: 'NEW',
+    //   },
+    // },
     // {
     //   component: CNavTitle,
     //   name: 'Theme',
