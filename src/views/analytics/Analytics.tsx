@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -14,10 +14,12 @@ import {
   Card,
   CardContent,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Paper,
   Select,
+  TextField,
   Typography,
 } from '@mui/material'
 import Table from '@mui/material/Table'
@@ -28,6 +30,13 @@ import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
 
+import dayjs from 'dayjs'
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { DatePicker, DateRangePicker } from '@mui/x-date-pickers'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -111,6 +120,26 @@ const Analytics = () => {
       },
     },
   }
+  // const today = dayjs()
+  // const yesterday = dayjs().subtract(1, 'day')
+  // const todayStartOfTheDay = today.startOf('day')
+
+  const today = dayjs()
+  const yesterday = dayjs().subtract(1, 'day')
+  const todayStartOfTheDay = today.startOf('day')
+
+  const [startDate, setStartDate] = useState(yesterday)
+  const [endDate, setEndDate] = useState(today)
+  const [error, setError] = useState(false)
+
+  const handleEndDateChange = (newValue) => {
+    if (newValue && newValue.isBefore(startDate)) {
+      setError(true)
+    } else {
+      setError(false)
+    }
+    setEndDate(newValue)
+  }
 
   return (
     <>
@@ -129,7 +158,37 @@ const Analytics = () => {
               <MenuItem value={'bot2'}>Bot 2</MenuItem>
             </Select>
           </FormControl>
-        
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={(newValue) => {
+                  setStartDate(newValue)
+                  // Ensure end date is adjusted if it's before the new start date
+                  if (endDate && endDate.isBefore(newValue)) {
+                    setEndDate(newValue)
+                    setError(false)
+                  }
+                }}
+                sx={{
+                  '& .MuiInputBase-root': { height: '46px' },
+                }}
+                renderInput={(params) => <TextField {...params} error={error} />}
+              />
+              <DatePicker
+                label="End Date"
+                value={endDate}
+                minDate={startDate} // Disable dates before the start date
+                onChange={handleEndDateChange}
+                sx={{
+                  '& .MuiInputBase-root': { height: '46px' },
+                }}
+                renderInput={(params) => <TextField {...params} error={error} />}
+              />
+            </div>
+            {error && <FormHelperText error>End date cannot be before start date.</FormHelperText>}
+          </LocalizationProvider>
         </Box>
 
         <Card>
