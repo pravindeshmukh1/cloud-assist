@@ -64,11 +64,11 @@ if (localStorage.getItem('role') != 'Admin') {
           name: 'Bot List',
           to: '/botList',
         },
-        {
-          component: CNavItem,
-          name: 'Edit Bot',
-          to: '/editBot',
-        },
+        // {
+        //   component: CNavItem,
+        //   name: 'Edit Bot',
+        //   to: '/editBot',
+        // },
       ],
     },
     {

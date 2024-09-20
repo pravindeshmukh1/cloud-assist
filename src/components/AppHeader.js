@@ -13,6 +13,7 @@ import {
   CNavLink,
   CNavItem,
   useColorModes,
+  CProgress,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -27,7 +28,7 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import { Button } from '@mui/material'
+import { Box, Button, LinearProgress } from '@mui/material'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -105,24 +106,44 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
         </CHeaderNav> */}
+        {/* <CHeaderNav className="">
+          <CProgress value={25}>25%</CProgress>
+        </CHeaderNav> */}
         <CHeaderNav>
-          <Button
-            variant="contained"
-            color="info"
-            size="small"
-            data-fsc-item-path-value="cloudassist"
-            data-fsc-action="Add, Checkout"
+          <Box
+            width={300}
+            display={'flex'}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+            gap={1}
           >
-            Subscribe
-          </Button>
+            <Box width={200}>
+              <CProgress height={12} value={55}>
+                55%
+              </CProgress>
+            </Box>
+            <li className="nav-item py-1">
+              <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
+            </li>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              data-fsc-item-path-value="cloudassist"
+              data-fsc-action="Add, Checkout"
+              sx={{ paddingLeft: '20px', paddingRight: '20px' }}
+            >
+              Subscribe
+            </Button>
+          </Box>
           {/* <button data-fsc-item-path-value="phot-io-main-app" data-fsc-action="Add, Checkout">
             Add to cart
           </button> */}
-
+          {/* 
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
-          </li>
-          <CDropdown variant="nav-item" placement="bottom-end">
+          </li> */}
+          {/* <CDropdown variant="nav-item" placement="bottom-end">
             <CDropdownToggle caret={false}>
               {colorMode === 'dark' ? (
                 <CIcon icon={cilMoon} size="lg" />
@@ -158,10 +179,10 @@ const AppHeader = () => {
                 type="button"
                 onClick={() => setColorMode('auto')}
               >
-                {/* <CIcon className="me-2" icon={cilContrast} size="lg" /> Auto */}
+                <CIcon className="me-2" icon={cilContrast} size="lg" /> Auto
               </CDropdownItem>
             </CDropdownMenu>
-          </CDropdown>
+          </CDropdown> */}
           {/* <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>

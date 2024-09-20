@@ -283,14 +283,16 @@ const BotList = () => {
                           aria-label="Basic button group"
                           size="small"
                         >
-                          <Button
-                            component="label"
-                            variant="outlined"
-                            color="error"
-                            startIcon={<DriveFileRenameOutlineIcon color="error" />}
-                          >
-                            Edit
-                          </Button>
+                          <Link to="/botConfig">
+                            <Button
+                              component="label"
+                              variant="outlined"
+                              startIcon={<DriveFileRenameOutlineIcon />}
+                            >
+                              Edit
+                            </Button>
+                          </Link>
+
                           <Button
                             component="label"
                             variant="outlined"
