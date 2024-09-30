@@ -32,11 +32,13 @@ import {
 import { cibDependabot } from '@coreui/icons'
 import SendIcon from '@mui/icons-material/Send'
 import { GridDeleteIcon } from '@mui/x-data-grid'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
 import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt'
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt'
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import MicIcon from '@mui/icons-material/Mic'
 const Home = () => {
   const [searchParam, setSearchParam] = useSearchParams()
@@ -45,11 +47,28 @@ const Home = () => {
   console.log(searchParam.get('flag'))
   console.log(searchParam.get('Cid'))
 
+  const [refresh, setrefresh] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+
+  const navigate = useNavigate();
+  function refreshPage(){
+    if(!refresh){
+      alert("in")
+      navigate("/home",{ replace: true })
+      setrefresh(false)
+    } 
+  }
+  const [activeBot, setactiveBot] = useState<Bot | null>()
   if (searchParam.size > 0) {
     localStorage.setItem('userId', searchParam.get('uid'))
     localStorage.setItem('role', searchParam.get('role'))
     localStorage.setItem('flag', searchParam.get('flag'))
     localStorage.setItem('cid', searchParam.get('Cid'))
+    localStorage.setItem('assistantId', searchParam.get('assistantId'))
+    // setactiveBot(localStorage.getItem('assistantId'))
+    refreshPage();
+    // navigate(0)
   }
   const [bot, setBot] = useState<Bot[]>([])
 
@@ -76,7 +95,6 @@ const Home = () => {
         console.error(err)
       })
   }, [])
-  const [activeBot, setactiveBot] = useState<Bot | null>()
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -98,12 +116,13 @@ const Home = () => {
       },
     ])
   }
-
+  const [val, setval] = useState(false)
+  const [val1, setval1] = useState(false)
   return (
     <>
-      {!(bot.length > 0) ? (
+      {/* {!(bot.length > 0) ? (
         <div>{'No bots available Please create one'}</div>
-      ) : (
+      ) : ( */}
         <div>
           <div className="content-wrapper">
             <div className="container-xxl flex-grow-1 container-p-y pt-0">
@@ -113,6 +132,15 @@ const Home = () => {
                   style={{ maxHeight: '55vh', minWidth: '60vw', height: '55vh' }}
                 >
                   {messages.map((res) => {
+                    function updateval(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+                     setval(true);
+                     setval1(false);
+                    }
+                    function updateval1(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+                      setval(false);
+                      setval1(true);
+                     }
+
                     return (
                       <>
                         <Card
@@ -137,11 +165,17 @@ const Home = () => {
                                 <CIcon icon={cilUser} size="sm" />
                               )}
                               <Box>
+                              
                                 <IconButton size="small">
-                                  <ThumbUpOffAltIcon fontSize="small" />
                                 </IconButton>
-                                <IconButton size="small">
-                                  <ThumbDownOffAltIcon fontSize="small" />
+                                <IconButton size="small" onClick={updateval}>
+                                 {val? <ThumbUpIcon fontSize="small" />:
+                                  <ThumbUpOffAltIcon fontSize="small" />}
+                                </IconButton>
+                                <IconButton size="small" onClick={updateval1}>
+                               
+                                {val1? <ThumbDownIcon fontSize="small" />:
+                                  <ThumbDownOffAltIcon fontSize="small" />}
                                 </IconButton>
                               </Box>
                             </Stack>
@@ -180,6 +214,7 @@ const Home = () => {
                     console.log('🚀 ~ data:', data)
                     setMessages((msg) => [...msg, data])
                     let post = {
+                      cid:localStorage.getItem('cid'),
                       asstId: activeBot?.assistantId,
                       threadId: activeBot?.threadId,
                       text: values.msg,
@@ -401,7 +436,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      )}
+      {/* )} */}
     </>
   )
 }

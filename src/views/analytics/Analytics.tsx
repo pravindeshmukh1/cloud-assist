@@ -11,6 +11,7 @@ import {
 } from 'chart.js'
 import {
   Box,
+  Button,
   Card,
   CardContent,
   FormControl,
@@ -37,19 +38,23 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker, DateRangePicker } from '@mui/x-date-pickers'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { TimePicker } from '@mui/x-date-pickers/TimePicker'
+import axios from 'axios'
+import { Bot, HistoryI } from '../../interface'
+import constants from '../../constants'
+import { Dataset } from '@mui/icons-material'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 interface QuestionColumns {
-  id: 'name' | 'code'
+  id: string
   label: string
   align?: 'right'
   format?: (value: number) => string
 }
 
 const questionColumns: readonly QuestionColumns[] = [
-  { id: 'name', label: 'Name' },
-  { id: 'code', label: 'ISO\u00a0Code' },
+  { id: 'question', label: 'question' }
+
 ]
 
 interface Data {
@@ -74,6 +79,18 @@ const knowGapRow = [
 ]
 
 const Analytics = () => {
+  const [botList, setBotList] = useState<Bot[]>()
+  useEffect(() => {
+    axios
+    .get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`)
+    .then((res) => {
+      setBotList(res.data)
+      setBot(res.data[0].assistantId)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+  }, [])
   const [bot, setBot] = React.useState('')
 
   const handleBotChange = (event) => {
@@ -141,6 +158,22 @@ const Analytics = () => {
     setEndDate(newValue)
   }
 
+  
+
+  const [dataSet, setDataSet] = useState<HistoryI[]>() 
+  function executeDataFetch(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    let data={
+      
+        "assistantId":bot,
+         "fromDate":startDate,
+        "toDate":endDate
+    
+    }
+       axios.post<HistoryI[]>(`${constants.getAssistantHistory}`,data).then(res=>{
+      setDataSet(res.data);
+    })
+  }
+
   return (
     <>
       <Paper>
@@ -154,8 +187,10 @@ const Analytics = () => {
               label="Bot"
               onChange={handleBotChange}
             >
-              <MenuItem value={'bot1'}>Bot 1</MenuItem>
-              <MenuItem value={'bot2'}>Bot 2</MenuItem>
+              {botList?.map(res=>{return(
+              <MenuItem value={res.assistantId}>{res.name}</MenuItem>
+              )
+              })}
             </Select>
           </FormControl>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -189,6 +224,7 @@ const Analytics = () => {
             </div>
             {error && <FormHelperText error>End date cannot be before start date.</FormHelperText>}
           </LocalizationProvider>
+          <Button onClick={executeDataFetch}>Submit</Button>
         </Box>
 
         <Card>
@@ -213,13 +249,13 @@ const Analytics = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {questionRow
+                  {dataSet &&dataSet
                     .slice(quePage * queRowsPerPage, quePage * queRowsPerPage + queRowsPerPage)
                     .map((row) => {
                       return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                           {questionColumns.map((column) => {
-                            const value = row[column.id]
+                            const value = row.question
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 {column.format && typeof value === 'number'

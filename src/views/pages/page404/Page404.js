@@ -33,7 +33,7 @@ const Page404 = () => {
                 <CIcon icon={cilMagnifyingGlass} />
               </CInputGroupText> */}
               {/* <CFormInput type="text" placeholder="What are you looking for?" /> */}
-              <Link to="/">
+              <Link to="/home">
               <CButton color="info">Home</CButton>
               </Link> 
             {/* </CInputGroup> */}

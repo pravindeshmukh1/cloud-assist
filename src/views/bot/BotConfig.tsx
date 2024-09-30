@@ -2,9 +2,10 @@ import axios from 'axios'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import constants from '../../constants'
 import { Assistant, Bot } from '../../interface'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { prompts } from "../../prompts";
 import {
-  AppBar,
+  Backdrop,
   Box,
   Button,
   Card,
@@ -12,6 +13,7 @@ import {
   CardContent,
   CardHeader,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -20,7 +22,6 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
-  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -37,8 +38,6 @@ import {
   Stack,
   styled,
   Switch,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from '@mui/material'
@@ -65,56 +64,22 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import HdrStrongOutlinedIcon from '@mui/icons-material/HdrStrongOutlined'
 import HdrWeakOutlinedIcon from '@mui/icons-material/HdrWeakOutlined'
 import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import CachedIcon from '@mui/icons-material/Cached'
 import MoreTimeIcon from '@mui/icons-material/MoreTime'
-import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
+import DoneIcon from '@mui/icons-material/Done'
 import { useTheme } from '@emotion/react'
+import CachedIcon from '@mui/icons-material/Cached'
+
 import TextSnippetIcon from '@mui/icons-material/TextSnippet'
 import ApiIcon from '@mui/icons-material/Api'
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded'
+
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 
-//switch
-const label = { inputProps: { 'aria-label': 'Size switch demo' } }
 
-//tabs
-interface TabPanelProps {
-  children?: React.ReactNode
-  dir?: string
-  index: number
-  value: number
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  )
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
-  }
-}
-
-//
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -140,6 +105,19 @@ const Item = styled(Paper)(({ theme }) => ({
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 const BotConfig = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { name, model1 } = location.state
+  console.log(name);
+  console.log(model1);
+  const [processStatus, setprocessStatus] = useState<string>("")
+  const [open, setOpen] = React.useState(false);
+  const handleClose1 = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
   const [status1, setStatus1] = useState<boolean>(false)
   const bot: Bot = {
     assistantId: '',
@@ -166,31 +144,68 @@ const BotConfig = () => {
       setFiles(e.target.files)
     }
   }
-  function completeSetup(assistant: string): void {
+  function updateOtherDoc(assistant: string, type: string) {
     let data = {
-      asstId: assistant,
-      path: '',
-      botName: 'car',
+      "userId": localStorage.getItem('userId'),
+      "assistantId": assistant,
+      "type": type,
+      "jsonInput": type == 'json' ? JSON.stringify(faqList) : text
     }
-    axios
-      .post(`${constants.uploadLocalFiles}`, data)
-      .then((res) => {
-        console.log(res)
-        if (res.status == 200) {
-          alert(true)
-          setStatus1(true)
+    // return data;
+    axios.post(constants.updateOtherDoc, data).then(res => {
+      console.log(res);
+
+    }).then(res => console.log(res)
+    )
+  }
+  function completeSetup(assistant: string): void {
+    alert("started complete setup")
+   
+    setprocessStatus("final setup")
+    // if (files != null) {
+    //   if (files?.length > 0) {
+        let data = {
+          asstId: assistant,
+          path: '',
+          botName: 'car',
         }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+        axios
+          .post(`${constants.uploadLocalFiles}`, data)
+          .then((res) => {
+            console.log(res)
+            if (res.status == 200) {
+              alert(true)
+              setStatus1(true)
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          }).then(() => {
+
+            setOpen(false)
+            navigate("/botList", { state: { assistant } })
+          })
+      // }
+    // }
   }
   const handleUpload = async (assistantId: string) => {
+    if (text) {
+      alert("uploading files")
+      setprocessStatus("uploading files")
+     await updateOtherDoc(assistantId, "txt")
+    } if (faqList) {
+      setprocessStatus("uploading faq")
+     await updateOtherDoc(assistantId, "json")
+    }
+
+    
+    setprocessStatus("upload files")
+    // if(files!=null){
     if (files) {
       setStatus('uploading')
 
-      const formData = new FormData()
-      ;[...files].forEach((file) => {
+      const formData = new FormData();
+      [...files].forEach((file) => {
         formData.append('files', file)
       })
       formData.append('body', assistantId)
@@ -210,14 +225,55 @@ const BotConfig = () => {
         setStatus('fail')
       }
     }
+    // }
+    if (websiteUrl.length > 0) {
+      setprocessStatus("upload url")
+      let data = {
+        "userId": localStorage.getItem("userId"),
+        assistantId,
+        url: websiteUrl
+      }
+      axios
+        .post<Assistant>(`${constants.uploadWebsite}`, { ...data })
+        .then((res) => { setprocessStatus("upload url done") }).catch(err => console.log(err)
+        )
+    }
   }
-  //select model for bot
-  const [model, setModel] = useState('')
+
+  const [model, setModel] = useState(model1)
+  const [instruction, setinstruction] = useState("")
+  const [url, seturl] = useState("")
+
+  const [websiteUrl, setwebsiteUrl] = useState<Array<String>>([])
+
   const handleModelChange = (event: SelectChangeEvent) => {
     setModel(event.target.value)
   }
+  function updatedName(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+    let val = event.target.value
+    seturl(val)
+    // setwebsiteUrl([...websiteUrl,val])
+  }
+
+
+
+  function addVal(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    const expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+    const regex = new RegExp(expression);
+    const t = url;
+
+    if (t.match(regex)) {
+      // alert("Successful match");
+      seturl('')
+      setwebsiteUrl([...websiteUrl, url])
+    } else {
+      alert("must be a url");
+    }
+  }
+
 
   //Bot Schedule
+
   // Initialize state with an empty array for each weekday and enabled status
   const [schedules, setSchedules] = useState(
     weekdays.reduce((acc, day) => {
@@ -288,9 +344,6 @@ const BotConfig = () => {
   }
 
   //model
-  const [fileDialog, setFileDialogOpen] = useState(false)
-  const [textDialog, setTextDialogOpen] = useState(false)
-  const [apiDialog, setAPIDialogOpen] = useState(false)
   const [dialog, setDialogOpen] = useState(false)
   const [youtubeDialog, setYoutubeDialog] = useState(false)
   const [faqDialog, setFaqDialog] = useState(false)
@@ -298,28 +351,13 @@ const BotConfig = () => {
   const handleDialogOpen = () => {
     setDialogOpen(true)
   }
-  const handleFileDialogOpen = () => {
-    setFileDialogOpen(true)
-  }
-  const handleTextDialogOpen = () => {
-    setTextDialogOpen(true)
-  }
-  const handleAPIDialogOpen = () => {
-    setAPIDialogOpen(true)
-  }
+
+
   const handleYoutubeDialogOpen = () => {
     setYoutubeDialog(true)
   }
   const handleFaqDialogOpen = () => {
     setFaqDialog(true)
-  }
-  const handleClose = () => {
-    setDialogOpen(false)
-    setYoutubeDialog(false)
-    setFaqDialog(false)
-    setFileDialogOpen(false)
-    setTextDialogOpen(false)
-    setAPIDialogOpen(false)
   }
 
   //faq
@@ -343,290 +381,138 @@ const BotConfig = () => {
     updatedFAQs[index][field] = event.target.value
     setFAQs(updatedFAQs)
   }
-
+  const [faqList, setfaqList] = useState<Array>()
   const handleFaqSubmit = () => {
-    // Handle form submission (e.g., send data to server)
+    //   let data={
+    //     "userId": localStorage.getItem('userId'),
+    //     "assistantId": "asst_GjHE5KEnhcaRZPXX38S2lpgR",
+    //     "type": "json",
+    //     "jsonInput": "{\"userId\":\"4\",\"assistantId\":\"asst_GjHE5KEnhcaRZPXX38S2lpgR\",\"type\":\"txt\",\"jsonInput\":\"\"}"
+    // }
+    //   axios.post(constants.updateOtherDoc,)
     console.log(faqs)
+    setfaqList(faqs)
   }
-  //upload files
-  interface FileColumn {
-    id: 'name' | 'size' | 'uploadDate'
+  // bot files
+  interface Column {
+    id: string
     label: string
     minWidth?: number
-    align?: 'right'
+    align?: 'left'
     format?: (value: number) => string
   }
-  const fileColumns: readonly FileColumn[] = [
+
+  const columns: readonly Column[] = [
     { id: 'name', label: 'File Name', minWidth: 170 },
     {
       id: 'size',
       label: 'Size',
       minWidth: 170,
-      align: 'right',
+      align: 'left',
+      format: (value: number) => value.toLocaleString('en-US'),
     },
     {
-      id: 'uploadDate',
-      label: 'Upload Date',
+      id: 'noOfDocs',
+      label: 'No of Documents',
       minWidth: 170,
-      align: 'right',
+      align: 'left',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'createdDt',
+      label: 'Created Date',
+      minWidth: 170,
+      align: 'left',
+      format: (value: number) => value.toLocaleString('en-US'),
     },
   ]
+  function createData(name: string, code: string, population: number, size: number): Data {
+    const density = population / size
+    return { name, code, population, size, density }
+  }
+  const rows = [
+    createData('India', 'IN', 1324171354, 3287263),
+    createData('China', 'CN', 1403500365, 9596961),
+    createData('Italy', 'IT', 60483973, 301340),
+    createData('United States', 'US', 327167434, 9833520),
+    createData('Canada', 'CA', 37602103, 9984670),
+    createData('Australia', 'AU', 25475400, 7692024),
+    createData('Germany', 'DE', 83019200, 357578),
+    createData('Ireland', 'IE', 4857000, 70273),
+    createData('Mexico', 'MX', 126577691, 1972550),
+    createData('Japan', 'JP', 126317000, 377973),
+    createData('France', 'FR', 67022000, 640679),
+    createData('United Kingdom', 'GB', 67545757, 242495),
+    createData('Russia', 'RU', 146793744, 17098246),
+    createData('Nigeria', 'NG', 200962417, 923768),
+    createData('Brazil', 'BR', 210147125, 8515767),
+  ]
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  interface FileData {
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value)
+    setPage(0)
+  }
+  interface Document {
+    size: string
+    id: number
     name: string
-    size: string
-    uploadDate: string
+    description: string
+    assistantId: string
+    threadId: string
+    userId: string
+    documentId: string
+    createdDt: string
+    instruction: string
   }
-
-  function createData(name: string, size: string, uploadDate: string): FileData {
-    return { name, size, uploadDate }
-  }
-  const fileRows = [createData('File name', '1MB', '2024-09-14T03:55:00.391336')]
-  console.log('🚀 ~ fileRows:', fileRows)
-
-  const [pageFile, setPageFile] = useState(0)
-  const [rowsPerPageFile, setRowsPerPageFile] = useState(10)
-
-  const handleChangePageFile = (event: unknown, newPage: number) => {
-    setPageFile(newPage)
-  }
-
-  const handleChangeRowsPerPageFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPageFile(+event.target.value)
-    setPageFile(0)
-  }
-
-  //upload text
-  interface textColumn {
-    id: 'text' | 'size' | 'uploadDate'
-    label: string
-    minWidth?: number
-    align?: 'right'
-    format?: (value: number) => string
-  }
-  const textColumns: readonly textColumn[] = [
-    { id: 'text', label: 'Text', minWidth: 170 },
+  const [document, setDocument] = useState<Document[]>([
     {
-      id: 'size',
-      label: 'Size',
-      minWidth: 170,
-      align: 'right',
+      id: 0,
+      name: '',
+      description: '',
+      assistantId: '',
+      threadId: '',
+      userId: '',
+      documentId: '',
+      createdDt: '',
+      instruction: '',
+      size: '',
     },
-    {
-      id: 'uploadDate',
-      label: 'Upload Date',
-      minWidth: 170,
-      align: 'right',
-    },
-  ]
+  ])
+  //model
+  const [fileDialog, setFileDialogOpen] = useState(false)
+  const [textDialog, setTextDialogOpen] = useState(false)
+  const [apiDialog, setAPIDialogOpen] = useState(false)
 
-  interface TextData {
-    text: string
-    size: string
-    uploadDate: string
+
+  const handleFileDialogOpen = () => {
+    setFileDialogOpen(true)
+  }
+  const handleTextDialogOpen = () => {
+    setTextDialogOpen(true)
+  }
+  const handleAPIDialogOpen = () => {
+    setAPIDialogOpen(true)
   }
 
-  function createTextData(text: string, size: string, uploadDate: string): TextData {
-    return { text, size, uploadDate }
+  const handleClose = () => {
+    setDialogOpen(false)
+    setYoutubeDialog(false)
+    setFaqDialog(false)
+    setFileDialogOpen(false)
+    setTextDialogOpen(false)
+    setAPIDialogOpen(false)
   }
-  const textRows = [
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-    createTextData('File name', '1MB', '2024-09-14T03:55:00.391336'),
-  ]
-
-  const [pageText, setPageText] = useState(0)
-  const [rowsPerPageText, setRowsPerPageText] = useState(10)
-
-  const handleChangePageText = (event: unknown, newPage: number) => {
-    setPageText(newPage)
+  const [text, settext] = useState("")
+  function handleText(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
+    settext(e.target.value)
   }
 
-  const handleChangeRowsPerPageText = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPageText(+event.target.value)
-    setPageText(0)
-  }
-
-  //upload faq
-  interface faqColumn {
-    id: 'question' | 'answer' | 'status' | 'uploadDate'
-    label: string
-    minWidth?: number
-    align?: 'right'
-    format?: (value: number) => string
-  }
-  const faqColumns: readonly faqColumn[] = [
-    { id: 'question', label: 'Question', minWidth: 170 },
-    {
-      id: 'answer',
-      label: 'Answer',
-      minWidth: 170,
-      align: 'right',
-    },
-    {
-      id: 'status',
-      label: 'Status',
-      minWidth: 170,
-      align: 'right',
-    },
-    {
-      id: 'uploadDate',
-      label: 'Upload Date',
-      minWidth: 170,
-      align: 'right',
-    },
-  ]
-
-  interface FAQData {
-    question: string
-    answer: string
-    status: string
-    uploadDate: string
-  }
-
-  function createFAQData(
-    question: string,
-    answer: string,
-    status: string,
-    uploadDate: string,
-  ): FAQData {
-    return { question, answer, status, uploadDate }
-  }
-  const faqRows = [
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-    createFAQData('Question?', 'answer', 'Processed', '2024-09-14T03:55:00.391336'),
-  ]
-  const [pageFaq, setPageFaq] = useState(0)
-  const [rowsPerPageFaq, setRowsPerPageFaq] = useState(10)
-
-  const handleChangePageFaq = (event: unknown, newPage: number) => {
-    setPageFaq(newPage)
-  }
-
-  const handleChangeRowsPerPageFaq = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPageFaq(+event.target.value)
-    setPageFaq(0)
-  }
-
-  //upload website
-  interface websiteColumn {
-    id: 'websiteUrl' | 'status' | 'uploadDate'
-    label: string
-    minWidth?: number
-    align?: 'right'
-    format?: (value: number) => string
-  }
-  const websiteColumns: readonly websiteColumn[] = [
-    { id: 'websiteUrl', label: 'Website Url', minWidth: 170 },
-    {
-      id: 'status',
-      label: 'Status',
-      minWidth: 170,
-      align: 'right',
-    },
-    {
-      id: 'uploadDate',
-      label: 'Upload Date',
-      minWidth: 170,
-      align: 'right',
-    },
-  ]
-
-  interface WebsiteData {
-    websiteUrl: string
-    status: string
-    uploadDate: string
-  }
-
-  function createWebsiteData(websiteUrl: string, status: string, uploadDate: string): WebsiteData {
-    return { websiteUrl, status, uploadDate }
-  }
-  const websiteRows = [
-    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
-    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
-    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
-    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
-    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
-    createWebsiteData('cloudsocial.io', 'Processed', '2024-09-14T03:55:00.391336'),
-  ]
-
-  const [pageWeb, setPageWeb] = useState(0)
-  const [rowsPerPageWeb, setRowsPerPageWeb] = useState(10)
-
-  const handleChangePageWeb = (event: unknown, newPage: number) => {
-    setPageWeb(newPage)
-  }
-
-  const handleChangeRowsPerPageWeb = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPageWeb(+event.target.value)
-    setPageWeb(0)
-  }
-
-  //upload api integration
-  interface apiColumn {
-    id: 'api' | 'key' | 'uploadDate'
-    label: string
-    minWidth?: number
-    align?: 'right'
-    format?: (value: number) => string
-  }
-  const apiColumns: readonly apiColumn[] = [
-    { id: 'api', label: 'API', minWidth: 170 },
-    {
-      id: 'key',
-      label: 'Key',
-      minWidth: 170,
-      align: 'right',
-    },
-    {
-      id: 'uploadDate',
-      label: 'Upload Date',
-      minWidth: 170,
-      align: 'right',
-    },
-  ]
-
-  interface APIData {
-    api: string
-    key: string
-    uploadDate: string
-  }
-
-  function createAPIData(api: string, key: string, uploadDate: string): APIData {
-    return { api, key, uploadDate }
-  }
-  const apiRows = [createAPIData('DSA', 'asftfxgdwe3kjs982jsldwk', '2024-09-14T03:55:00.391336')]
-
-  const [pageApi, setPageApi] = useState(0)
-  const [rowsPerPageApi, setRowsPerPageApi] = useState(10)
-
-  const handleChangePageApi = (event: unknown, newPage: number) => {
-    setPageApi(newPage)
-  }
-
-  const handleChangeRowsPerPageApi = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPageApi(+event.target.value)
-    setPageApi(0)
-  }
-
-  //tabs
-  const theme = useTheme()
-  const [value, setValue] = useState(0)
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue)
-  }
   return (
     <Card>
       {/* {bot?.id} */}
@@ -634,11 +520,11 @@ const BotConfig = () => {
       {/* <Button onClick={()=>props.updateVal}>update</Button> */}
       <Formik
         initialValues={{
-          name: bot != null ? bot.name : '',
+          name: name != null ? name : '',
           description: '',
-          model: '',
+          model: model1 != null ? model1 : '',
           promptName: '',
-          instructions: '',
+          instructions: instruction,
         }}
         //   validate={values => {
         //     const errors = {};
@@ -653,6 +539,7 @@ const BotConfig = () => {
         //   }}
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(false)
+          setOpen(true)
           // setTimeout(() => {
           //     alert(JSON.stringify(values, null, 2));
           //     setSubmitting(false);
@@ -660,7 +547,7 @@ const BotConfig = () => {
           let data = {
             name: values.name,
             description: values.description,
-            model: model,
+            model: values.model,
             instructions: values.instructions,
             userid: localStorage.getItem('userId'),
             tools: [
@@ -673,12 +560,15 @@ const BotConfig = () => {
           axios
             .post<Assistant>(`${constants.link}/${localStorage.getItem('userId')}`, { ...data })
             .then((res) => {
+              setprocessStatus("creating assistant")
               let threadData = {
                 assistantId: res.data.id,
                 userId: localStorage.getItem('userId'),
               }
               axios.post(`${constants.createThread}`, threadData).then((res) => {
+                setprocessStatus("creating thread")
                 handleUpload(String(threadData.assistantId)).then((res) => {
+                  alert("done with upload")
                   completeSetup(String(threadData.assistantId))
                 })
               })
@@ -687,7 +577,7 @@ const BotConfig = () => {
             .catch((err) => console.log(err))
         }}
       >
-        {({ values, isSubmitting, handleChange, handleBlur, handleSubmit }) => (
+        {({ values, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
           <form onSubmit={handleSubmit}>
             <Paper>
               <Card>
@@ -752,68 +642,76 @@ const BotConfig = () => {
                   subheader=""
                   titleTypographyProps={{ fontSize: 18 }}
                 />
-                <Dialog
-                  maxWidth="lg"
-                  open={textDialog}
-                  onClose={handleClose}
-                  aria-labelledby="responsive-dialog-title"
-                >
-                  <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
-                    id="customized-dialog-title"
-                    fontSize={18}
-                  >
-                    Add Text
-                  </DialogTitle>
-                  <IconButton
-                    aria-label="close"
+
+                {/* <FormControl size="small" fullWidth sx={{ marginTop: 1, marginBottom: 1 }}>
+                    <InputLabel id="demo-select-small-label">Model</InputLabel>
+                    <Select
+                      labelId="demo-select-small-label"
+                      id="demo-select-small"
+                      value={model}
+                      label="Model"
+                      onChange={handleModelChange}
+                    >
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      <MenuItem value="gpt-4o">GPT-4o</MenuItem>
+                      <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
+                      <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
+                    </Select>
+                  </FormControl> */}
+
+                {/* <TextField
+                    label="Prompt Name"
+                    name="promptName"
+                    value={values.promptName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    margin="normal"
+                    id="outlined-size-small"
                     size="small"
-                    onClick={handleClose}
-                    sx={(theme) => ({
-                      position: 'absolute',
-                      right: 4,
-                      top: 4,
-                      color: theme.palette.grey[500],
-                    })}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
+                    fullWidth
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <HdrStrongOutlinedIcon color="info" fontSize="inherit" />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  /> */}
+                {/* <TextField
+                    multiline
+                    label="Prompt Instructions"
+                    name="instructions"
+                    value={values.instructions}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    margin="normal"
+                    id="outlined-size-small"
+                    size="small"
+                    fullWidth
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <HdrWeakOutlinedIcon color="info" fontSize="inherit" />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  /> */}
 
-                  <DialogContent>
-                    <DialogContentText>
-                      <Box sx={{}}>
-                        <Box component="section">
-                          <Typography color="gray" fontSize={16} margin={2}>
-                            Enter the text below, and Apollo will use it to enhance its knowledge
-                            and improve its response.
-                          </Typography>
-                        </Box>
-
-                        <TextField
-                          id="standard-multiline-flexible"
-                          label="Add Text"
-                          multiline
-                          maxRows={10}
-                          variant="outlined"
-                          fullWidth
-                        />
-                        <Box sx={{ mt: 1 }}>
-                          <Button
-                            variant="contained"
-                            type="submit"
-                            color="info"
-                            sx={{ float: 'right' }}
-                            disabled={isSubmitting}
-                            startIcon={<SaveAltOutlinedIcon />}
-                          >
-                            Save
-                          </Button>
-                        </Box>
-                      </Box>
-                    </DialogContentText>
-                  </DialogContent>
-                </Dialog>
-
+                {/* <Button
+                    component="label"
+                    // role={undefined}
+                    variant="outlined"
+                    tabIndex={-1}
+                    startIcon={<CloudUploadIcon />}
+                    fullWidth
+                    sx={{ p: 10, border: '1px dashed grey', marginTop: 2, marginBottom: 0 }}
+                    /> */}
                 <Dialog
                   maxWidth="lg"
                   open={apiDialog}
@@ -893,6 +791,68 @@ const BotConfig = () => {
                           </FormControl>
                         </Stack>
 
+                        <Box sx={{ mt: 1 }}>
+                          <Button
+                            variant="contained"
+                            type="submit"
+                            color="info"
+                            sx={{ float: 'right' }}
+                            disabled={isSubmitting}
+                            startIcon={<SaveAltOutlinedIcon />}
+                          >
+                            Save
+                          </Button>
+                        </Box>
+                      </Box>
+                    </DialogContentText>
+                  </DialogContent>
+                </Dialog>
+                <Dialog
+                  maxWidth="lg"
+                  open={textDialog}
+                  onClose={handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <DialogTitle
+                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
+                    id="customized-dialog-title"
+                    fontSize={18}
+                  >
+                    Add Text
+                  </DialogTitle>
+                  <IconButton
+                    aria-label="close"
+                    size="small"
+                    onClick={handleClose}
+                    sx={(theme) => ({
+                      position: 'absolute',
+                      right: 4,
+                      top: 4,
+                      color: theme.palette.grey[500],
+                    })}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+
+                  <DialogContent>
+                    <DialogContentText>
+                      <Box sx={{}}>
+                        <Box component="section">
+                          <Typography color="gray" fontSize={16} margin={2}>
+                            Enter the text below, and Apollo will use it to enhance its knowledge
+                            and improve its response.
+                          </Typography>
+                        </Box>
+
+                        <TextField
+                          id="standard-multiline-flexible"
+                          label="Add Text"
+                          multiline
+                          maxRows={10}
+                          variant="outlined"
+                          onChange={(e) => handleText(e)}
+                          fullWidth
+                        />
                         <Box sx={{ mt: 1 }}>
                           <Button
                             variant="contained"
@@ -999,7 +959,6 @@ const BotConfig = () => {
                     </DialogContentText>
                   </DialogContent>
                 </Dialog>
-
                 <Dialog
                   maxWidth="lg"
                   open={dialog}
@@ -1007,7 +966,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1 }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1043,8 +1002,10 @@ const BotConfig = () => {
                           id="outlined-size-small"
                           size="small"
                           fullWidth
+                          value={url}
+                          onChange={updatedName}
                         />
-                        <Button autoFocus variant="outlined" color="info">
+                        <Button autoFocus variant="outlined" color="info" onClick={addVal}>
                           Add
                         </Button>
                         <Divider />
@@ -1056,9 +1017,9 @@ const BotConfig = () => {
                         }}
                       >
                         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                          {[1].map((value) => (
+                          {websiteUrl.map((value, index) => (
                             <ListItem
-                              key={value}
+                              key={index}
                               disableGutters
                               secondaryAction={
                                 <IconButton aria-label="comment">
@@ -1067,7 +1028,7 @@ const BotConfig = () => {
                               }
                             >
                               <Chip
-                                label="https://cloudsocial.io"
+                                label={value}
                                 // onClick={handleClick}
                                 // onDelete={handleDelete}
                                 deleteIcon={<DeleteForeverIcon />}
@@ -1090,7 +1051,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1 }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1172,7 +1133,7 @@ const BotConfig = () => {
                   aria-labelledby="responsive-dialog-title"
                 >
                   <DialogTitle
-                    sx={{ m: 0, p: 1, borderBottom: 1, backgroundColor: 'skyblue' }}
+                    sx={{ m: 0, p: 1, borderBottom: 1 }}
                     id="customized-dialog-title"
                     fontSize={18}
                   >
@@ -1322,20 +1283,22 @@ const BotConfig = () => {
                         <Select
                           labelId="demo-select-small-label"
                           id="demo-select-small"
-                          value={model}
+                          value={values.model}
                           label="Model"
-                          onChange={handleModelChange}
+                          name='model'
+                          onChange={handleChange}
                         >
                           <MenuItem value="">
                             <em>None</em>
                           </MenuItem>
                           <MenuItem value="gpt-4o">GPT-4o</MenuItem>
                           <MenuItem value="gpt-4-turbo">GPT-4 Turbo and GPT-4</MenuItem>
+                          <MenuItem value="gpt-4o-mini">GPT-4o Mini</MenuItem>
                           <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
                         </Select>
                       </FormControl>
 
-                      <TextField
+                      {/* <TextField
                         label="Prompt Name"
                         name="promptName"
                         value={values.promptName}
@@ -1354,7 +1317,30 @@ const BotConfig = () => {
                             ),
                           },
                         }}
-                      />
+                      /> */}
+                      <FormControl size="small" fullWidth sx={{ marginTop: 1, marginBottom: 1 }}>
+                        <InputLabel id="demo-select-small-label">Prompt</InputLabel>
+                        <Select
+                          labelId="demo-select-small-label"
+                          id="demo-select-small"
+                          value={values.promptName}
+                          label="Prompt"
+                          name='promptName'
+                          onChange={(e) => { handleChange(e); setFieldValue("instructions", e.target.value, false) }}
+                        >
+                          <MenuItem selected value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {prompts.map(res => {
+                            return (
+
+                              <MenuItem key={res.promptsId} value={res.promptDescription}>{res.promptName}</MenuItem>
+                            )
+
+                          })}
+
+                        </Select>
+                      </FormControl>
                       <TextField
                         multiline
                         label="Prompt Instructions"
@@ -1526,6 +1512,17 @@ const BotConfig = () => {
                     >
                       Save
                     </Button>
+                    <div>
+
+                      <Backdrop
+                        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                        open={open}
+                        onClick={handleClose1}
+                      >
+                        <CircularProgress color="inherit" />
+                        <p>{processStatus}</p>
+                      </Backdrop>
+                    </div>
                   </CardActions>
                 </CardContent>
               </Card>
@@ -1534,398 +1531,6 @@ const BotConfig = () => {
         )}
       </Formik>
 
-      <Box sx={{ bgcolor: 'background.paper' }}>
-        <AppBar position="static">
-          <Tabs
-            value={value}
-            onChange={handleTabChange}
-            indicatorColor="secondary"
-            textColor="inherit"
-            variant="fullWidth"
-            aria-label="full width tabs example"
-            sx={{ backgroundColor: 'lightgray', color: 'black' }}
-          >
-            <Tab label="Files" {...a11yProps(0)} />
-            <Tab label="Text" {...a11yProps(1)} />
-            <Tab label="FAQ" {...a11yProps(2)} />
-            <Tab label="Website URL" {...a11yProps(3)} />
-            <Tab label="Integration API" {...a11yProps(4)} />
-          </Tabs>
-        </AppBar>
-        <TabPanel value={value} index={0} dir={theme.direction}>
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <Button
-              variant="outlined"
-              type=""
-              color="info"
-              sx={{ float: 'right', mb: 2 }}
-              startIcon={<UploadFileRoundedIcon fontSize="small" color="primary" />}
-              onClick={handleFileDialogOpen}
-            >
-              File Upload
-            </Button>
-
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table" size="small">
-                <TableHead style={{ backgroundColor: 'skyblue' }}>
-                  <TableRow>
-                    {fileColumns.map((column) => (
-                      <>
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      </>
-                    ))}
-                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {fileRows
-                    .slice(pageFile * rowsPerPageFile, pageFile * rowsPerPageFile + rowsPerPageFile)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                          {fileColumns.map((column) => {
-                            const value = row[column.id]
-                            return (
-                              <>
-                                <TableCell key={column.id} align={column.align}>
-                                  {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                                </TableCell>
-                              </>
-                            )
-                          })}
-                          <TableCell sx={{ float: 'left' }}>
-                            <IconButton color="error" size="small">
-                              <DeleteForeverIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={fileRows.length}
-              rowsPerPage={rowsPerPageFile}
-              page={pageFile}
-              onPageChange={handleChangePageFile}
-              onRowsPerPageChange={handleChangeRowsPerPageFile}
-            />
-          </Paper>
-        </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <Button
-              variant="outlined"
-              type=""
-              color="info"
-              sx={{ float: 'right', mb: 2 }}
-              startIcon={<TextSnippetIcon fontSize="small" color="primary" />}
-              onClick={handleTextDialogOpen}
-            >
-              Text
-            </Button>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table" size="small">
-                <TableHead style={{ backgroundColor: 'skyblue' }}>
-                  <TableRow>
-                    {textColumns.map((column) => (
-                      <>
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      </>
-                    ))}
-                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {textRows
-                    .slice(pageText * rowsPerPageText, pageText * rowsPerPageText + rowsPerPageText)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                          {textColumns.map((column) => {
-                            const value = row[column.id]
-                            return (
-                              <>
-                                <TableCell key={column.id} align={column.align}>
-                                  {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                                </TableCell>
-                              </>
-                            )
-                          })}
-                          <TableCell sx={{ float: 'left' }}>
-                            <IconButton color="default" size="small">
-                              <DriveFileRenameOutlineIcon />
-                            </IconButton>
-                            <IconButton color="error" size="small">
-                              <DeleteForeverIcon />
-                            </IconButton>
-                            <Switch {...label} color="success" />
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={textRows.length}
-              rowsPerPage={rowsPerPageText}
-              page={pageText}
-              onPageChange={handleChangePageText}
-              onRowsPerPageChange={handleChangeRowsPerPageText}
-            />
-          </Paper>
-        </TabPanel>
-        <TabPanel value={value} index={2} dir={theme.direction}>
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <Button
-              variant="outlined"
-              type=""
-              color="info"
-              sx={{ float: 'right', mb: 2 }}
-              startIcon={<LiveHelpIcon fontSize="small" color="primary" />}
-              onClick={handleFaqDialogOpen}
-            >
-              Faq
-            </Button>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table" size="small">
-                <TableHead style={{ backgroundColor: 'skyblue' }}>
-                  <TableRow>
-                    {faqColumns.map((column) => (
-                      <>
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      </>
-                    ))}
-                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {faqRows
-                    .slice(pageFaq * rowsPerPageFaq, pageFaq * rowsPerPageFaq + rowsPerPageFaq)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                          {faqColumns.map((column) => {
-                            const value = row[column.id]
-                            return (
-                              <>
-                                <TableCell key={column.id} align={column.align}>
-                                  {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                                </TableCell>
-                              </>
-                            )
-                          })}
-                          <TableCell sx={{ float: 'left' }}>
-                            <IconButton color="default" size="small">
-                              <DriveFileRenameOutlineIcon />
-                            </IconButton>
-                            <IconButton color="error" size="small">
-                              <DeleteForeverIcon />
-                            </IconButton>
-                            <Switch {...label} color="success" />
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={faqRows.length}
-              rowsPerPage={rowsPerPageFaq}
-              page={pageFaq}
-              onPageChange={handleChangePageFaq}
-              onRowsPerPageChange={handleChangeRowsPerPageFaq}
-            />
-          </Paper>
-        </TabPanel>
-        <TabPanel value={value} index={3} dir={theme.direction}>
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <Button
-              variant="outlined"
-              type=""
-              color="info"
-              sx={{ float: 'right', mb: 2 }}
-              startIcon={<LinkIcon fontSize="small" color="primary" />}
-              onClick={handleDialogOpen}
-            >
-              Website Url
-            </Button>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table" size="small">
-                <TableHead style={{ backgroundColor: 'skyblue' }}>
-                  <TableRow>
-                    {websiteColumns.map((column) => (
-                      <>
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      </>
-                    ))}
-                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {websiteRows
-                    .slice(pageWeb * rowsPerPageWeb, pageWeb * rowsPerPageWeb + rowsPerPageWeb)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                          {websiteColumns.map((column) => {
-                            const value = row[column.id]
-                            return (
-                              <>
-                                <TableCell key={column.id} align={column.align}>
-                                  {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                                </TableCell>
-                              </>
-                            )
-                          })}
-                          <TableCell sx={{ float: 'left' }}>
-                            <IconButton color="default" size="small">
-                              <DriveFileRenameOutlineIcon />
-                            </IconButton>
-                            <IconButton color="error" size="small">
-                              <DeleteForeverIcon />
-                            </IconButton>
-                            <IconButton color="secondary" size="small">
-                              <CachedIcon />
-                            </IconButton>
-                            <Switch {...label} color="success" />
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={websiteRows.length}
-              rowsPerPage={rowsPerPageWeb}
-              page={pageWeb}
-              onPageChange={handleChangePageWeb}
-              onRowsPerPageChange={handleChangeRowsPerPageWeb}
-            />
-          </Paper>
-        </TabPanel>
-        <TabPanel value={value} index={4} dir={theme.direction}>
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <Button
-              variant="outlined"
-              type=""
-              color="info"
-              sx={{ float: 'right', mb: 2 }}
-              startIcon={<ApiIcon fontSize="small" color="primary" />}
-              onClick={handleAPIDialogOpen}
-            >
-              API
-            </Button>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table" size="small">
-                <TableHead style={{ backgroundColor: 'skyblue' }}>
-                  <TableRow>
-                    {apiColumns.map((column) => (
-                      <>
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{ minWidth: column.minWidth, backgroundColor: 'skyblue' }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      </>
-                    ))}
-                    <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {apiRows
-                    .slice(pageApi * rowsPerPageApi, pageApi * rowsPerPageApi + rowsPerPageApi)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                          {apiColumns.map((column) => {
-                            const value = row[column.id]
-                            return (
-                              <>
-                                <TableCell key={column.id} align={column.align}>
-                                  {column.format && typeof value === 'number'
-                                    ? column.format(value)
-                                    : value}
-                                </TableCell>
-                              </>
-                            )
-                          })}
-                          <TableCell sx={{ float: 'left' }}>
-                            <IconButton color="default" size="small">
-                              <DriveFileRenameOutlineIcon />
-                            </IconButton>
-                            <IconButton color="error" size="small">
-                              <DeleteForeverIcon />
-                            </IconButton>
-                            <IconButton color="secondary" size="small">
-                              <CachedIcon />
-                            </IconButton>
-                            <Switch {...label} color="success" />
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={apiRows.length}
-              rowsPerPage={rowsPerPageApi}
-              page={pageApi}
-              onPageChange={handleChangePageApi}
-              onRowsPerPageChange={handleChangeRowsPerPageApi}
-            />
-          </Paper>
-        </TabPanel>
-      </Box>
     </Card>
   )
 }

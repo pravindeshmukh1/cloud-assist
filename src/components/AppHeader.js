@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -28,21 +28,37 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import { Box, Button, LinearProgress } from '@mui/material'
+import { Box, Button, LinearProgress, Menu, MenuItem } from '@mui/material'
+import BasicMenu from './BasicMenu'
+import axios from 'axios'
+import constants from '../constants'
 
 const AppHeader = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  const [payment, setpayment] = useState()
+
   useEffect(() => {
+    axios.get(`${constants.getPayment}/${localStorage.getItem('cid')}`).then(res=>{
+      setpayment(res.data)
+    })
     document.addEventListener('scroll', () => {
       headerRef.current &&
         headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
     })
-  }, [])
+  }, [anchorEl])
   // const addSBL = () => {
   //   const scriptId = 'fsc-api'
   //   const existingScript = document.getElementById(scriptId)
@@ -109,6 +125,9 @@ const AppHeader = () => {
         {/* <CHeaderNav className="">
           <CProgress value={25}>25%</CProgress>
         </CHeaderNav> */}
+         <div>
+      
+    </div>
         <CHeaderNav>
           <Box
             width={300}
@@ -117,11 +136,36 @@ const AppHeader = () => {
             justifyContent={'space-between'}
             gap={1}
           >
-            <Box width={200}>
-              <CProgress height={12} value={55}>
-                55%
-              </CProgress>
-            </Box>
+            <Button
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+      >
+        CREDITS
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <div onClick={handleClose}>
+          <div>Total Credits left</div>
+          <div>{payment?.currentToken}</div>
+          <div>Recharge Date</div>
+          <div>{payment?.rechargeDt}</div>
+          <div>Last Updated Date</div>
+          <div>{payment?.updatedDt}</div>
+        </div>
+        {/* <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={handleClose}>Logout</MenuItem> */}
+      </Menu>
+           
             <li className="nav-item py-1">
               <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
             </li>

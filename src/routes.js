@@ -12,9 +12,9 @@ const EditConfig = React.lazy(() => import('./views/bot/EditConfig'))
 let routes = []
 console.log(localStorage.getItem('role'))
 
-if (localStorage.getItem('role') != 'Admin') {
+if (localStorage.getItem('role') == 'Admin') {
   routes = [
-    { path: '/', exact: true, name: 'Home' },
+    { path: '/', exact: true, name: 'Home' }, 
     { path: '/home', name: 'Home', element: Home },
     { path: '/history', name: 'History', element: History },
     { path: '/analytics', name: 'Dashboard', element: Analytics },

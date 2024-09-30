@@ -37,6 +37,7 @@
     "chart.js": "^4.4.4",
     "classnames": "^2.5.1",
     "core-js": "^3.37.1",
+    "dayjs": "^1.11.13",
     "formik": "^2.4.6",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
@@ -47,7 +48,8 @@
     "react-router-dom": "^6.23.1",
     "react-table": "^7.8.0",
     "redux": "5.0.1",
-    "simplebar-react": "^3.2.5"
+    "simplebar-react": "^3.2.5",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/react-table": "^7.7.20",

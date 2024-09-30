@@ -81,7 +81,6 @@ import { Link, useLocation } from 'react-router-dom'
 import { Delete } from '@mui/icons-material'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 
-
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -260,7 +259,8 @@ const BotList = () => {
               <TableBody>
                 {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                   function deletAssistant(assistantId: string) {
-                    // axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
+                    axios.delete(`${constants.deleteAssistant}/${localStorage.getItem('userId')}/id/${assistantId}`).catch(err=>console.log(err))
+                   setRefresh(!refresh)
                   }
 
                   return (
@@ -283,7 +283,7 @@ const BotList = () => {
                           aria-label="Basic button group"
                           size="small"
                         >
-                          <Link to="/botConfig">
+                          <Link to="/editBotConfig" state={{ assistant: row }}>
                             <Button
                               component="label"
                               variant="outlined"
@@ -298,11 +298,15 @@ const BotList = () => {
                             variant="outlined"
                             color="error"
                             startIcon={<Delete color="error" />}
+                            onClick={()=>deletAssistant(row.assistantId)}
                           >
                             Delete
                           </Button>
                         </ButtonGroup>
                       </TableCell>
+                      {/* <TableCell>
+                        <Button>Delete</Button>
+                        </TableCell> */}
                     </TableRow>
                   )
                 })}
@@ -382,10 +386,10 @@ const BotList = () => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Link to="/botConfig" state={{ name: name, model1: model }}>
-            <Button variant="outlined" color="inherit">
-              Create
-            </Button>
+          <Link to="/botConfig"state={{name:name,model1:model}}>
+          <Button variant="outlined" color="inherit">
+            Create
+          </Button>
           </Link>
         </DialogActions>
       </BootstrapDialog>

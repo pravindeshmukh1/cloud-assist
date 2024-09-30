@@ -21,7 +21,7 @@ import {
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 let _nav = []
-if (localStorage.getItem('role') != 'Admin') {
+if (localStorage.getItem('role') == 'Admin') {
   _nav = [
     {
       component: CNavItem,
