@@ -259,7 +259,11 @@ const AddUser = () => {
                     .then(res => {
                       alert(res.data)
                       console.log(res.data);
-                      axios.post(`${constants.userAssistant}/23/add/${values.assistant}/${localStorage.getItem("userId")}`)
+                      axios.post(`${constants.userAssistant}/${res.data.createUsers[0].userid}/add/${values.assistant}/${localStorage.getItem("userId")}`).catch(err=>{
+                        
+                        console.log(err);
+                        
+                      })
 
                     }).catch(err => console.log(err)
                     )

@@ -63,7 +63,7 @@ const EditBot = () => {
     }
   }, [bot])
   const handleChange = (event: SelectChangeEvent) => {
-    alert(event.target.value as string)
+    // alert(event.target.value as string)
     setselectedAssistant(assistant?.filter(res => res.assistantId == event.target.value)[0])
     setBot(event.target.value as string)
   }

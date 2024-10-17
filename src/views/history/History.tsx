@@ -22,14 +22,14 @@
 //     axios.post<HistoryI[]>(`${constants.getHistory}/${localStorage.getItem("userId")}`)
 //     .then(res=>{
 //       console.log(res.data);
-     
+
 //       setHistory(res.data);
 //     }).catch(err=>
 //       console.log(err)
-      
+
 //     )
-  
-    
+
+
 //   }, [])
 
 //   // const data = useMemo(
@@ -37,33 +37,33 @@
 //   //     // Sample data
 //   //     {
 //   //       id: 1,
-       
+
 //   //     },
 //   //     {
 //   //       id: 2,
-       
+
 //   //     },
 //   //     {
 //   //       id: 2,
-       
+
 //   //     },
 //   //     {
 //   //       id: 2,
-        
+
 //   //     },
 //   //     {
 //   //       id: 2,
-       
+
 //   //     },
 //   //     {
 //   //       id: 2,
-       
+
 //   //     },
 
 //   //   ],
 //   //   [],
 //   // )
- 
+
 //   const columns = useMemo(
 //     () => [
 //       {
@@ -80,7 +80,7 @@
 //       //   Header: 'Email',
 //       //   accessor: 'email',
 //       // },
-      
+
 //       {
 //         Header: 'Time',
 //         accessor: 'uploadedDt',
@@ -116,7 +116,7 @@
 //     previousPage,
 //     nextPage,
 //     setPageSize,
-   
+
 //   } = useTable(
 //     { columns, data, initialState: { pageIndex: 0, pageSize: 5 } },
 //     useFilters,
@@ -131,10 +131,10 @@
 //   //   setFilterInput(value)
 //   // }
 
-  
+
 //   return (
 //     <>
-    
+
 //       {data.length>0?<div className="col-md-12">
 //         <div className=" card">
 //           <h5 className="card-header border border-bottom mb-3">Search History</h5>
@@ -271,6 +271,7 @@ import {
   Button,
   ButtonGroup,
   FormControl,
+  Input,
   InputAdornment,
   InputLabel,
   MenuItem,
@@ -312,6 +313,7 @@ interface Column {
 const columns: readonly Column[] = [
   { id: 'Sr.no', label: 'Name', minWidth: 170 },
   { id: 'model', label: 'Model', minWidth: 100 },
+  { id: 'Like', label: 'queLike', minWidth: 100 },
   {
     id: 'question',
     label: 'Question',
@@ -319,7 +321,7 @@ const columns: readonly Column[] = [
     align: 'left',
     format: (value: number) => value.toLocaleString('en-US'),
   },
-  
+
   {
     id: 'createdDt',
     label: 'Created Date',
@@ -401,31 +403,47 @@ const History = () => {
       noOfDocs: '',
     },
   ])
+  const [filterList, setfilterList] = React.useState<HistoryI[]>([{
+    "id": "",
+    "status": "",
+    "assistantId": "",
+    "userId": "",
+    "threadId": "",
+    "question": "",
+    "answer": "",
+    "tokenUsed": "",
+    "uploadedDt": "",
+    "model": "",
+    "botName": "",
+    "queLike": ""
+  }])
   const [data, setHistory] = React.useState<HistoryI[]>([{
-          "id": "",
-          "status": "",
-          "assistantId": "",
-          "userId": "",
-          "threadId": "",
-          "question": "",
-          "answer": "",
-          "tokenUsed": "",
-          "uploadedDt": "",
-          "model":""
-      }]);
+    "id": "",
+    "status": "",
+    "assistantId": "",
+    "userId": "",
+    "threadId": "",
+    "question": "",
+    "answer": "",
+    "tokenUsed": "",
+    "uploadedDt": "",
+    "model": "",
+    "botName": "",
+    "queLike": ""
+  }]);
   React.useEffect(() => {
-        axios.post<HistoryI[]>(`${constants.getHistory}/${localStorage.getItem("userId")}`)
-        .then(res=>{
-          console.log(res.data);
-         
-          setHistory(res.data);
-        }).catch(err=>
-          console.log(err)
-          
-        )
-      
-        
-      }, [])
+    axios.post<HistoryI[]>(`${constants.getHistory}/${localStorage.getItem("userId")}`)
+      .then(res => {
+        console.log(res.data);
+        setfilterList(res.data)
+        setHistory(res.data);
+      }).catch(err =>
+        console.log(err)
+
+      )
+
+
+  }, [])
 
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
@@ -442,7 +460,7 @@ const History = () => {
   const [open, setOpen] = React.useState(false)
   const [answer, setanswer] = React.useState("")
 
-  const handleClickOpen = (answer:string) => {
+  const handleClickOpen = (answer: string) => {
     setanswer(answer)
     setOpen(true)
   }
@@ -460,10 +478,76 @@ const History = () => {
     setname(event.target.value)
   }
 
+  function filterChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void {
+    if (e.target.value.length > 2) {
+      setHistory(filterList.filter(res => res.question.toLocaleLowerCase().includes(e.target.value.toLocaleLowerCase())))
+    } else {
+      setHistory(filterList)
+    }
+  }
+
+  function dropDownChange(e: SelectChangeEvent<unknown>): void {
+    if (e.target.value === 'none') {
+      setHistory(filterList)
+    } else {
+      setHistory(filterList.filter(res => res.queLike === e.target.value))
+    }
+  }
+  const [botList, setBotList] = React.useState<Bot[]>()
+  React.useEffect(() => {
+    axios
+    .get<Bot[]>(`${constants.getAssistantByUser}/${localStorage.getItem('userId')}`)
+    .then((res) => {
+      setBotList(res.data)
+      setBot(res.data[0].assistantId)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+  }, [])
+  const [bot1, setBot] = React.useState('')
+
+  const handleBotChange = (event) => {
+    setBot(event.target.value as string)
+    if (event.target.value === 'none') {
+      setHistory(filterList)
+    } else {
+      setHistory(filterList.filter(res => res.botName === event.target.value))
+    }
+  }
+  function resetFilter(): void {
+    setHistory(filterList)
+  }
+
   return (
     <>
       {bot.length > 0 ? (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+          <div>
+            <Input name='search' placeholder='search question' onChange={(e) => filterChange(e)} />
+            <Select onChange={e => dropDownChange(e)}>
+              <MenuItem selected value="none">ALL</MenuItem>
+              <MenuItem value="like">Like</MenuItem>
+              <MenuItem value="dislike">Dislike</MenuItem>
+            </Select>
+            <FormControl size="small" sx={{ minWidth: '120px' }}>
+            <InputLabel id="demo-simple-select-label">Bot</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={bot1}
+              label="Bot"
+              onChange={handleBotChange}
+            >
+              <MenuItem selected value={"none"}>all</MenuItem>
+              {botList?.map(res=>{return(
+              <MenuItem value={res.name}>{res.name}</MenuItem>
+              )
+              })}
+            </Select>
+          </FormControl>
+          <Button onChange={()=>resetFilter()}>Reset Filters</Button>
+          </div>
           <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table" size="small">
               <TableHead style={{ backgroundColor: 'skyblue' }}>
@@ -477,31 +561,32 @@ const History = () => {
                       {column.label}
                     </TableCell>
                   ))}
-      
+
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
+                {data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   function deletAssistant(assistantId: string) {
                     // axios.delete(`${constants.deleteAssistant}/${assistantId}`).catch(err=>console.log(err))
-                   
+
                   }
 
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                      <TableCell>{index+1}</TableCell>
+                      <TableCell>{row.botName}</TableCell>
                       <TableCell>{row.model}</TableCell>
+                      <TableCell>{row.queLike}</TableCell>
                       <TableCell>{row.question}</TableCell>
                       <TableCell>{row.uploadedDt}</TableCell>
                       <TableCell>
 
-                      <Button onClick={()=>handleClickOpen(row.answer)}>
-          View Answer
-        </Button>
+                        <Button onClick={() => handleClickOpen(row.answer)}>
+                          View Answer
+                        </Button>
                       </TableCell>
-                      
-                      
-                      
+
+
+
                     </TableRow>
                   )
                 })}
@@ -544,10 +629,10 @@ const History = () => {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-        <Markdown>{answer}</Markdown>
+          <Markdown>{answer}</Markdown>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" color="inherit"  onClick={handleClose}>
+          <Button variant="outlined" color="inherit" onClick={handleClose}>
             Close
           </Button>
         </DialogActions>

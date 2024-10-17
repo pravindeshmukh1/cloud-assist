@@ -81,6 +81,7 @@ import ApiIcon from '@mui/icons-material/Api'
 import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded'
 
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
+import AccordionUsage from './AccordionUsage'
 
 
 const VisuallyHiddenInput = styled('input')({
@@ -248,7 +249,7 @@ useEffect(() => {
   axios.post(`${constants.getDocuments}/${localStorage.getItem('userId')}/id/${assistantVal.assistantId}`)
   .then(res=>{
     setrefresh(true)
-    alert("ok")
+    // alert("ok")
     console.log(res);
     
     setDocument(res.data)
@@ -1606,10 +1607,12 @@ function getDocs(){
             <Tab label="Text" {...a11yProps(1)} />
             <Tab label="FAQ" {...a11yProps(2)} />
             <Tab label="Website URL" {...a11yProps(3)} />
-            <Tab label="Integration API" {...a11yProps(4)} />
+            {/* <Tab label="Integration API" {...a11yProps(4)} /> */}
           </Tabs>
         </AppBar>
         <TabPanel value={value} index={0} dir={theme.direction}>
+        {fileDoc==undefined && "no record found"}
+        {fileDoc?.length<1 && "no record found"}
           {fileDoc?.map((res,index)=>{
         
             
@@ -1618,7 +1621,7 @@ function getDocs(){
                <TableHead>
                <TableRow>
               </TableRow>
-              <TableCell>{index}</TableCell>
+              <TableCell>{index+1}</TableCell>
               <TableCell>{res.documentId}</TableCell>
               <TableCell>{res.docName}</TableCell>
               <TableCell>{res.docSize}</TableCell>
@@ -1630,7 +1633,8 @@ function getDocs(){
           })}
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-         
+        {textDoc==undefined && "no record found"}
+        {textDoc?.length<1 && "no record found"}
           {textDoc?.map((res,index)=>{
             console.log(res);
             
@@ -1640,11 +1644,12 @@ function getDocs(){
                <TableRow>
               
               </TableRow>
-              <TableCell>{res.documentId}</TableCell>
+              {/* <TableCell>{res.documentId}</TableCell>
               <TableCell>{res.docName}</TableCell>
-              <TableCell>{res.docSize}</TableCell>
-              <TableCell>{res.docContent}</TableCell>
-              <TableCell>{res.uploadedDt}</TableCell>
+              <TableCell>{res.docSize}</TableCell> */}
+              <h3>Test uploaded was</h3>
+              <p>{res.docContent}</p>
+              {/* <TableCell>{res.uploadedDt}</TableCell> */}
               </TableHead>
               </>
 
@@ -1652,12 +1657,22 @@ function getDocs(){
           })}
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
+        {faqDoc==undefined && "no Record found"}
+        {faqDoc?.length<1 && "no Record found"}
           {faqDoc?.map((res,index)=>{
             console.log(res);
-            
+            interface QnA{
+              question:string,
+              answer:string
+            }
+            const val:QnA[]=JSON.parse(res.docContent)
             return(
+
               <>
-               <TableHead>
+              
+                <AccordionUsage res={val}/>
+              
+               {/* <TableHead>
                <TableRow>
               
               </TableRow>
@@ -1666,28 +1681,25 @@ function getDocs(){
               <TableCell>{res.docSize}</TableCell>
               <TableCell>{res.docContent}</TableCell>
               <TableCell>{res.uploadedDt}</TableCell>
-              </TableHead>
+              </TableHead> */}
               </>
 
             )
           })}
         </TabPanel>
         <TabPanel value={value} index={3} dir={theme.direction}>
-     
+        {webDoc==undefined && "no Record found"}
+        {webDoc?.length<1 && "no Record found"}
         {webDoc?.map((res,index)=>{
             console.log(res);
             
             return(
               <>
-               <TableHead>
-               <TableRow>
-              </TableRow>
-              <TableCell>{res.documentId}</TableCell>
-              <TableCell>{res.docName}</TableCell>
-              <TableCell>{res.docSize}</TableCell>
-              <TableCell>{res.docContent}</TableCell>
-              <TableCell>{res.uploadedDt}</TableCell>
-              </TableHead>
+               <ol>
+
+              <li>{res.docContent}</li>
+               </ol>
+              
               </>
 
             )

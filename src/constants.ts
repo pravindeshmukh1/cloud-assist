@@ -1,6 +1,6 @@
-const baseurl = 'http://localhost:8080'
+// const baseurl = 'http://localhost:8081'
 const userBaseUrl='https://cloudassist.cloudpoint.co.in'
-// const baseurl = 'https://cloudhsm.cloudpoint.co.in'
+const baseurl = 'https://cloudhsm.cloudpoint.co.in'
 const constants = {
   updateOtherDoc:`${baseurl}/assistant/upload/text`,
   deleteuser:`${userBaseUrl}/Home/deleteuser`,
@@ -23,7 +23,8 @@ const constants = {
   getHistory: `${baseurl}/history`,
   createThread:`${baseurl}/thread/create`,
   getDocuments:`${baseurl}/document/list`,
-  uploadWebsite:`${baseurl}/assistant/upload/website`
+  uploadWebsite:`${baseurl}/assistant/upload/website`,
+  likeMsg:`${baseurl}/runner/like`
 }
 // asst_UWIlkTxmN1HnKyFY9j5RavlS
 Object.freeze(constants)

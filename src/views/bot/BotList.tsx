@@ -80,6 +80,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { Link, useLocation } from 'react-router-dom'
 import { Delete } from '@mui/icons-material'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
+import Markdown from 'react-markdown'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -111,6 +112,13 @@ const columns: readonly Column[] = [
   {
     id: 'noOfDocs',
     label: 'No of Documents',
+    minWidth: 170,
+    align: 'left',
+    format: (value: number) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'createdDt',
+    label: 'Created Date',
     minWidth: 170,
     align: 'left',
     format: (value: number) => value.toLocaleString('en-US'),
@@ -218,11 +226,14 @@ const BotList = () => {
     setOpen(true)
   }
   const handleClose = () => {
+    setopen1(false)
     setOpen(false)
   }
 
   const [model, setModel] = React.useState('')
+  const [open1, setopen1] = React.useState(false)
   const [name, setname] = React.useState('')
+  const [snippit, setsnippit] = React.useState('')
 
   const handleChange = (event: SelectChangeEvent) => {
     setModel(event.target.value)
@@ -254,16 +265,39 @@ const BotList = () => {
                     </TableCell>
                   ))}
                   <TableCell style={{ backgroundColor: 'skyblue' }}>Action</TableCell>
+                  <TableCell style={{ backgroundColor: 'skyblue' }}>Add</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {bot.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                   function deletAssistant(assistantId: string) {
-                    axios.delete(`${constants.deleteAssistant}/${localStorage.getItem('userId')}/id/${assistantId}`).catch(err=>console.log(err))
-                   setRefresh(!refresh)
+                    axios.delete(`${constants.deleteAssistant}/${localStorage.getItem('userId')}/id/${assistantId}`).catch(err => console.log(err))
+                    setRefresh(!refresh)
+                  }
+
+
+
+                  function createBotSnippit(assistantId: string): void {
+                    setopen1(true)
+                    let constant = `
+                    <!--add to Head tag -->
+<script src="https://unpkg.com/react/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom/umd/react-dom.development.js" crossorigin></script>
+<script src="https://earnest-cobbler-a88d3c.netlify.app/static/js/main.3890fc81.js"></script>
+<!--add to Body tag -->
+<div id="my-widget-root" data-uuid="${localStorage.getItem('userId')}" data-assit="${assistantId}"></div>
+<script>
+    const widgetRoot = document.getElementById('my-widget-root');
+    const uuid= widgetRoot.getAttribute('data-uuid');
+	const assit= widgetRoot.getAttribute('data-assit');
+    ReactDOM.render(React.createElement(window.MyWidget, { uuid,assit}), widgetRoot);
+</script>
+                    `
+                    setsnippit(constant)
                   }
 
                   return (
+
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       {columns.map((column) => {
                         const value = row[column.id]
@@ -298,11 +332,14 @@ const BotList = () => {
                             variant="outlined"
                             color="error"
                             startIcon={<Delete color="error" />}
-                            onClick={()=>deletAssistant(row.assistantId)}
+                            onClick={() => deletAssistant(row.assistantId)}
                           >
                             Delete
                           </Button>
                         </ButtonGroup>
+                      </TableCell>
+                      <TableCell>
+                        <Button onClick={() => createBotSnippit(row.assistantId)}>Add bot to website</Button>
                       </TableCell>
                       {/* <TableCell>
                         <Button>Delete</Button>
@@ -386,11 +423,42 @@ const BotList = () => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Link to="/botConfig"state={{name:name,model1:model}}>
-          <Button variant="outlined" color="inherit">
-            Create
-          </Button>
+          <Link to="/botConfig" state={{ name: name, model1: model }}>
+            <Button variant="outlined" color="inherit">
+              Create
+            </Button>
           </Link>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open1}
+        fullWidth
+      >
+        <DialogTitle sx={{ m: 0, p: 1, borderBottom: 1 }} id="customized-dialog-title">
+         Add Snippit to website
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <Markdown>{snippit}</Markdown>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" color="inherit" onClick={handleClose}>
+            Close
+          </Button>
         </DialogActions>
       </BootstrapDialog>
     </>

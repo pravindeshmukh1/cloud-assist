@@ -1517,7 +1517,7 @@ const BotConfig = () => {
                       <Backdrop
                         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
                         open={open}
-                        onClick={handleClose1}
+                        // onClick={handleClose1}
                       >
                         <CircularProgress color="inherit" />
                         <p>{processStatus}</p>

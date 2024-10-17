@@ -9,8 +9,19 @@ import {
   Paper,
   Typography,
 } from '@mui/material'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 const Profile = () => {
+const [val, setval] = useState({})
+  useEffect(() => {
+    
+  axios(`https://cloudassist.cloudpoint.co.in/Home/getuser?id=${localStorage.getItem("userId")}`).then(res=>{
+    setval(res.data.userDetails[0]);
+  })
+  
+  }, [])
+  
   return (
     <>
       <Container>
@@ -28,7 +39,7 @@ const Profile = () => {
                   Email :
                 </Typography>
                 <Typography variant="body2" gutterBottom>
-                  raj@gmail.com
+                  {val?.Email}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>

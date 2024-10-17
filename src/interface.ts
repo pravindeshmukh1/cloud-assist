@@ -2,6 +2,7 @@ export interface Message {
   message: string,
   id: number,
   msgBy: string,
+  msgId:number
 }
 
 export interface MsgResponse {
@@ -9,6 +10,7 @@ export interface MsgResponse {
   text: string,
   date: string,
   resp_time: string
+  msgId:number
 }
 export interface Bot {
   size: string;
@@ -36,8 +38,9 @@ export interface HistoryI {
   answer: string,
   tokenUsed: string,
   uploadedDt: string,
-  model: string
-
+  model: string,
+  botName:string
+  queLike:string
 }
 export interface Values {
   firstName: string;

@@ -1,45 +1,24 @@
-import classNames from 'classnames'
-
-import CIcon from '@coreui/icons-react'
-import { cilHome, cilSearch, cilUser } from '@coreui/icons'
 import { Field, Form, Formik } from 'formik'
 import axios from 'axios'
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import constants from '../../constants'
 import { Bot, Message, MsgResponse } from '../../interface'
-import Markdown from 'react-markdown'
 import {
-  Avatar,
-  Backdrop,
   Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  CircularProgress,
   FormControl,
   IconButton,
-  Input,
   InputAdornment,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
-import { cibDependabot } from '@coreui/icons'
 import SendIcon from '@mui/icons-material/Send'
-import { GridDeleteIcon } from '@mui/x-data-grid'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt'
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt'
-import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt'
-import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import MicIcon from '@mui/icons-material/Mic'
+import MsgCard from './MsgCard'
 const Home = () => {
   const [searchParam, setSearchParam] = useSearchParams()
   console.log(searchParam.get('uid'))
@@ -49,15 +28,15 @@ const Home = () => {
 
   const [refresh, setrefresh] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
 
   const navigate = useNavigate();
-  function refreshPage(){
-    if(!refresh){
-      alert("in")
-      navigate("/home",{ replace: true })
+  function refreshPage() {
+    if (!refresh) {
+      // alert("in")
+      navigate("/home", { replace: true })
       setrefresh(false)
-    } 
+    }
   }
   const [activeBot, setactiveBot] = useState<Bot | null>()
   if (searchParam.size > 0) {
@@ -66,9 +45,7 @@ const Home = () => {
     localStorage.setItem('flag', searchParam.get('flag'))
     localStorage.setItem('cid', searchParam.get('Cid'))
     localStorage.setItem('assistantId', searchParam.get('assistantId'))
-    // setactiveBot(localStorage.getItem('assistantId'))
-    refreshPage();
-    // navigate(0)
+
   }
   const [bot, setBot] = useState<Bot[]>([])
 
@@ -76,13 +53,6 @@ const Home = () => {
 
   const handleChange = (event) => {
     setText(event.target.value)
-  }
-  const [open, setOpen] = React.useState(false)
-  const handleClose = () => {
-    setOpen(false)
-  }
-  const handleOpen = () => {
-    setOpen(true)
   }
   useEffect(() => {
     axios
@@ -101,6 +71,7 @@ const Home = () => {
       message: 'Hi there How can I help you',
       id: 0,
       msgBy: 'AI',
+      msgId:0
     },
   ])
   console.log('🚀 ~ messages:', messages)
@@ -113,16 +84,15 @@ const Home = () => {
         message: 'Hi there How can I help you',
         id: 0,
         msgBy: 'AI',
+        msgId:0
       },
     ])
   }
-  const [val, setval] = useState(false)
-  const [val1, setval1] = useState(false)
   return (
     <>
-      {/* {!(bot.length > 0) ? (
+      {!(bot.length > 0) ? (
         <div>{'No bots available Please create one'}</div>
-      ) : ( */}
+      ) : (
         <div>
           <div className="content-wrapper">
             <div className="container-xxl flex-grow-1 container-p-y pt-0">
@@ -132,19 +102,12 @@ const Home = () => {
                   style={{ maxHeight: '55vh', minWidth: '60vw', height: '55vh' }}
                 >
                   {messages.map((res) => {
-                    function updateval(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-                     setval(true);
-                     setval1(false);
-                    }
-                    function updateval1(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-                      setval(false);
-                      setval1(true);
-                     }
 
                     return (
                       <>
-                        <Card
-                          sx={{
+                        <MsgCard res={res} />
+                        {/* <Card
+                          sx={{ 
                             justifyContent: 'flex-end',
                             alignItems: 'center',
                             m: 0.5,
@@ -180,7 +143,7 @@ const Home = () => {
                               </Box>
                             </Stack>
                           </CardContent>
-                        </Card>
+                        </Card> */}
                       </>
                     )
                   })}
@@ -203,22 +166,24 @@ const Home = () => {
                   onSubmit={(values, { setSubmitting, resetForm }) => {
                     console.log('🚀 ~ values:', values.msg)
                     setTimeout(() => {
-                      alert(JSON.stringify(values, null, 2))
+                      // alert(JSON.stringify(values, null, 2))
                       setSubmitting(false)
                     }, 400)
                     let data: Message = {
                       id: 1,
                       message: values.msg,
                       msgBy: 'user',
+                      msgId: 0
                     }
                     console.log('🚀 ~ data:', data)
                     setMessages((msg) => [...msg, data])
                     let post = {
-                      cid:localStorage.getItem('cid'),
+                      cid: localStorage.getItem('cid'),
                       asstId: activeBot?.assistantId,
                       threadId: activeBot?.threadId,
-                      text: values.msg,
+                      text: `${values.msg}. Do not justify your answers. Do not give information not mentioned in the CONTEXT INFORMATION.`,
                       userId: localStorage.getItem('userId'),
+                      botName: activeBot?.name,
                     }
 
                     // axios
@@ -248,9 +213,11 @@ const Home = () => {
                           id: 1,
                           message: values.msg,
                           msgBy: 'user',
+                          msgId: 0
                         }
                         data1.message = res.data.response
                         data1.msgBy = 'AI'
+                        data1.msgId = res.data.msgId
                         setMessages((msg) => [...msg, data1])
                         resetForm()
                       })
@@ -337,6 +304,7 @@ const Home = () => {
                               id="demo-simple-select"
                               onChange={(e) => botSelected(e)}
                               label="Bot"
+                              // value={activeBot?.name}
                               autoWidth
                               style={{
                                 borderRadius: '30px',
@@ -436,7 +404,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      {/* )} */}
+      )}
     </>
   )
 }
